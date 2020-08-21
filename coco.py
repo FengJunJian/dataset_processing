@@ -13,17 +13,17 @@ import os.path as osp
 import pickle
 import uuid
 
-import lib.datasets.ds_utils as ds_utils
+import ds_utils as ds_utils
 import numpy as np
 import scipy.sparse
-from lib.datasets.imdb import imdb
-from lib.config import config as cfg
+from imdb import imdb
+# from lib.config import config as cfg
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
 
 class coco(imdb):
-    def __init__(self, image_set, year):
+    def __init__(self, image_set, year,path):
         imdb.__init__(self, 'coco_' + year + '_' + image_set)
         # COCO specific config options
         self.config = {'use_salt': True,
@@ -31,7 +31,7 @@ class coco(imdb):
         # name, paths
         self._year = year
         self._image_set = image_set
-        self._data_path = osp.join(cfg.FLAGS2["data_dir"], 'coco')
+        self._data_path = osp.join(path,'coco')#osp.join(cfg.FLAGS2["data_dir"], 'coco')
         # load COCO API, classes, class <-> id mappings
         self._COCO = COCO(self._get_ann_file())
         cats = self._COCO.loadCats(self._COCO.getCatIds())

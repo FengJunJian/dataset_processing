@@ -14,9 +14,9 @@ from __future__ import division
 from __future__ import print_function
 
 __sets = {}
-from lib.datasets.custom_pascal_voc import pascal_voc
-#from lib.datasets.pascal_voc import pascal_voc
-from lib.datasets.coco import coco
+from custom_pascal_voc import pascal_voc
+#from pascal_voc import pascal_voc
+from coco import coco
 
 import numpy as np
 

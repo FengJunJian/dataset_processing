@@ -17,31 +17,45 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import scipy.sparse
 
-from lib.config import config as cfg
-from lib.datasets.imdb import imdb
-from lib.datasets.voc_eval import voc_eval
+# from lib.config import config as cfg
+from imdb import imdb
+from voc_eval import voc_eval
 import matplotlib.pyplot as plt
 import cv2
 
-'''class_name=('__background__',  # always index 0
-                          'boat')'''  # ship detection
-'''class_name=('__background__',  # always index 0
-                          'fishing boat','bulk cargo carrier','container ship','general cargo ship',
-            'passenger ship','ore carrier')'''
-
+# class_name=('__background__',  # always index 0
+#                           'boat')  # ship detection
+# class_name=('__background__',  # always index 0
+#             'fishing boat','bulk cargo carrier','container ship','general cargo ship',
+#             'passenger ship','ore carrier')
+class_name=('__background__',#0
+            'passenger ship',#1
+            'ore carrier',#2
+            'general cargo ship',#3
+            'fishing boat',#4
+            'Sail boat',#5
+            'Kayak',#6
+            'flying bird',##7
+            'vessel',#8
+            'Buoy',#9
+            'Ferry',#10
+            'container ship',#11
+            'Other',#12
+            'Boat',#13
+            'Speed boat',#14
+            'bulk cargo carrier',#15
+)
 
 class pascal_voc(imdb):
-    def __init__(self, image_set, year, devkit_path=None):
+    def __init__(self, image_set, year, devkit_path):
         imdb.__init__(self, image_set)  # imdb_name
         self._year = year
         self._image_set = image_set
-        self._devkit_path = self._get_default_path() if devkit_path is None \
-            else devkit_path
+        self._devkit_path = devkit_path#self._get_default_path() if devkit_path is None else devkit_path
         self._data_path = self._devkit_path#cfg.FLAGS2["custom_data_dir"]
         # os.path.join(self._devkit_path, 'VOC' + self._year)
 
-
-        self._classes = cfg.FLAGS2["class_name"]  # class_name#
+        self._classes = class_name  # class_name#
         # ('__background__',  # always index 0
         #              'boat')
 
@@ -101,7 +115,9 @@ class pascal_voc(imdb):
         Return the default path where PASCAL VOC is expected to be installed.
         """
         # path=os.path.join(cfg.FLAGS2["data_dir"], 'VOCdevkit' + self._year)
-        path = cfg.FLAGS2["semi_labeled_dir"]
+        path = None#cfg.FLAGS2["semi_labeled_dir"]
+        if path is None:
+            raise ValueError('error:path is None')
         return path
 
     def gt_roidb(self):
@@ -320,7 +336,7 @@ class pascal_voc(imdb):
         print('-----------------------------------------------------')
         print('Computing results with the official MATLAB eval code.')
         print('-----------------------------------------------------')
-        path = os.path.join(cfg.FLAGS2["root_dir"], 'lib', 'datasets',
+        path = os.path.join('lib', 'datasets',
                             'VOCdevkit-matlab-wrapper')
         cmd = 'cd {} && '.format(path)
         cmd += '{:s} -nodisplay -nodesktop '.format('matlab')
@@ -483,14 +499,3 @@ if __name__ == '__main__':
             f.writelines(name + '\n')
       '''
 
-
-    #print(annotation_classes_file(path,'flying bird'))
-            # d = pascal_voc('trainval', '2007')
-            # res = d.roidb
-
-            # 读取数据集中所有class
-            # class_name=pascal_voc
-
-            # from IPython import embed
-
-            # embed()

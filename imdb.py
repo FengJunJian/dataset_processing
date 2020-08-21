@@ -14,8 +14,8 @@ import os.path as osp
 import PIL
 import numpy as np
 import scipy.sparse
-from lib.config import config as cfg
-from lib.utils.cython_bbox import bbox_overlaps
+#from lib.config import config as cfg
+from utils.cython_bbox import bbox_overlaps
 
 
 class imdb(object):
@@ -77,7 +77,7 @@ class imdb(object):
 
     @property
     def cache_path(self):
-        cache_path = osp.abspath(osp.join(cfg.FLAGS2["data_dir"], 'cache'))
+        cache_path = osp.abspath(osp.join('data', 'cache'))
         if not os.path.exists(cache_path):
             os.makedirs(cache_path)
         return cache_path

@@ -17,9 +17,9 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import scipy.sparse
 
-from lib.config import config as cfg
-from lib.datasets.imdb import imdb
-from .voc_eval import voc_eval
+# from lib.config import config as cfg
+from imdb import imdb
+from voc_eval import voc_eval
 
 
 class pascal_voc(imdb):
@@ -90,7 +90,9 @@ class pascal_voc(imdb):
         """
         Return the default path where PASCAL VOC is expected to be installed.
         """
-        return os.path.join(cfg.FLAGS2["data_dir"], 'VOCdevkit' + self._year)
+        path=os.path.join('VOCdevkit' + self._year)
+        print('default_path:',path)
+        return path
 
     def gt_roidb(self):
         """
@@ -296,5 +298,5 @@ if __name__ == '__main__':
     #from datasets.pascal_voc import pascal_voc
     d = pascal_voc('trainval', '2007')
     res = d.roidb
-    from IPython import embed;
-    embed()
+    # from IPython import embed;
+    # embed()

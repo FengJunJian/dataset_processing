@@ -17,10 +17,10 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import scipy.sparse
 
-from lib.config import config as cfg
-from lib.datasets.imdb import imdb
+#from lib.config import config as cfg
+from imdb import imdb
 #from .voc_eval import voc_eval
-from lib.datasets.voc_eval import voc_eval
+from voc_eval import voc_eval
 import matplotlib.pyplot as plt
 
 '''class_name=('__background__',  # always index 0
@@ -29,12 +29,11 @@ import matplotlib.pyplot as plt
                           'fishing boat','bulk cargo carrier','container ship','general cargo ship',
             'passenger ship','ore carrier')'''
 class pascal_voc(imdb):
-    def __init__(self, image_set, year, devkit_path=None):
+    def __init__(self, image_set, year, devkit_path):
         imdb.__init__(self, image_set)#imdb_name
         self._year = year
         self._image_set = image_set
-        self._devkit_path = self._get_default_path() if devkit_path is None \
-            else devkit_path
+        self._devkit_path = devkit_path #self._get_default_path() if devkit_path is None  else devkit_path
         self._data_path = self._devkit_path#cfg.FLAGS2["custom_data_dir"]
         #os.path.join(self._devkit_path, 'VOC' + self._year)
 
@@ -100,7 +99,10 @@ class pascal_voc(imdb):
         Return the default path where PASCAL VOC is expected to be installed.
         """
         #path=os.path.join(cfg.FLAGS2["data_dir"], 'VOCdevkit' + self._year)
-        path=cfg.FLAGS2["custom_data_dir"]
+        #path=cfg.FLAGS2["custom_data_dir"]
+        path=None
+        if path is None:
+            raise ValueError('default path is None')
         return path
 
     def gt_roidb(self):
