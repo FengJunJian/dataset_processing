@@ -1,30 +1,30 @@
 # dataset processing
-Metrics of dataset with **VOC** format
+##Metrics of dataset with **VOC** format
 
 1.Go to  ./coco/PythonAPI
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Run `python setup.py build_ext --inplace`
+Run `python setup.py build_ext --inplace`
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Run `python setup.py build_ext install`
+Run `python setup.py build_ext install`
 
 2.Go to ./utils and run `python setup.py build_ext --inplace`
 
-3.Run main.py
+3.Run evalution_detection_pkl.py
 
 -----------------------------------------------------------------------------------------
 
-​	Please modify the following variables:
+Please modify the following variables:
 
-​	**In  main.py**
+In  evalution_detection_pkl.py
 
-​	*dataset_path*: VOC dataset path.
+dataset_path: VOC dataset path.
 
-​	*split_name*: Which mainset to evaluate.
+split_name: Which mainset to evaluate.
 
-​	**In  semi_pascal_voc.py**
+In  semi_pascal_voc.py
 
-​	class_name: modify as the class_names in your dataset.
+class_name: modify as the class_names in your dataset.
 
------------------------------
+--------------------------------------
+In rename_classname.py ...
 
-​	
