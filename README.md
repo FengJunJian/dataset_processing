@@ -1,4 +1,4 @@
-# dataset metric
+# dataset processing
 Metrics of dataset with **VOC** format
 
 1.Go to  ./coco/PythonAPI
