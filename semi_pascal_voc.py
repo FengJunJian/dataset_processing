@@ -22,29 +22,9 @@ from imdb import imdb
 from voc_eval import voc_eval
 import matplotlib.pyplot as plt
 import cv2
+from config import CLASSES
 
-# class_name=('__background__',  # always index 0
-#                           'boat')  # ship detection
-# class_name=('__background__',  # always index 0
-#             'fishing boat','bulk cargo carrier','container ship','general cargo ship',
-#             'passenger ship','ore carrier')
-class_name=('__background__',#0
-            'passenger ship',#1
-            'ore carrier',#2
-            'general cargo ship',#3
-            'fishing boat',#4
-            'Sail boat',#5
-            'Kayak',#6
-            'flying bird',##7
-            'vessel',#8
-            'Buoy',#9
-            'Ferry',#10
-            'container ship',#11
-            'Other',#12
-            'Boat',#13
-            'Speed boat',#14
-            'bulk cargo carrier',#15
-)
+class_name=CLASSES
 
 class pascal_voc(imdb):
     def __init__(self, image_set, year, devkit_path):
@@ -150,12 +130,14 @@ class pascal_voc(imdb):
 
         This function loads/saves from/to a cache file to speed up future calls.
         """
-        gt_dict = {'boxes': np.array([[-1, -1, -1, -1]], dtype=np.int16),
-                   'gt_classes': np.array([-1]),
-                   'gt_overlaps': -1,
-                   'flipped': False,
-                   'seg_areas': -1}
-        gt_roidb = [gt_dict] * len(self.image_index)
+        gt_roidb=[]
+        for i in range(len(self.image_index)):
+            gt_dict = {'boxes': np.array([[-1, -1, -1, -1]], dtype=np.int16),
+                       'gt_classes': np.array([-1]),
+                       'gt_overlaps': -1,
+                       'flipped': False,
+                       'seg_areas': -1}
+            gt_roidb = gt_roidb.append(gt_dict)
         # cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')
         # if os.path.exists(cache_file):
         #     with open(cache_file, 'rb') as fid:
@@ -369,7 +351,7 @@ class pascal_voc(imdb):
 
 def annotation_classes_file(path,class_name):
     from collections import Counter
-    # 寻找数据集下某类别对应的文件
+    # 寻找数据集下各类别对应的文件(.xml)
     # path：注释文件所在目录
     # class_name: 类别名
     class_files=[]
@@ -396,7 +378,7 @@ def annotation_classes_file(path,class_name):
 
 def annotation_classes_Mainset(annotation_path,mainset):
     from collections import Counter
-    # 寻找数据集下某集合的类别与数目情况
+    # 寻找数据集下某集合的各类别与对应数目情况
     # annotation_path：注释文件所在目录
     # mainset: 数据集名
     mainset_path=os.path.join(annotation_path,'../ImageSets/Main',mainset+'.txt')
@@ -413,13 +395,6 @@ def annotation_classes_Mainset(annotation_path,mainset):
         tree = ET.parse(os.path.join(annotation_path, filename+'.xml'))
         objs = tree.findall('object')
         total_objs += len(objs)
-        # boxes = np.zeros((num_objs, 4), dtype=np.uint16)
-        # gt_classes = np.zeros((num_objs), dtype=np.int32)
-        # overlaps = np.zeros((num_objs, self.num_classes), dtype=np.float32)
-        # "Seg" area for pascal is just the box area
-        # seg_areas = np.zeros((num_objs), dtype=np.float32)
-
-        # Load object bounding boxes into a data frame.
         for ix, obj in enumerate(objs):
             name = obj.find('name').text.strip()
             class_names.append(name)
@@ -430,15 +405,16 @@ def annotation_classes_Mainset(annotation_path,mainset):
     print('len class:',len(class_files.keys()))
     return dict(Counter(class_names))
 
-def annotation_classes_name(path):
+def annotation_classes_name(dataset_path):
     from collections import Counter
     # 寻找数据集注释下所有的类别
     # path：注释文件所在目录
     class_names = []
     total_objs=0
-    files = os.listdir(path)
+    Annotation_path=os.path.join(dataset_path,'Annotations')
+    files = os.listdir(Annotation_path)
     for filename in files:
-        tree = ET.parse(os.path.join(path, filename))
+        tree = ET.parse(os.path.join(Annotation_path, filename))
         objs = tree.findall('object')
         total_objs += len(objs)
 
@@ -456,7 +432,7 @@ def annotation_classes_name(path):
 
 def annotation_meanpixel(dataset_path,mainsets):
     #from collections import Counter
-    # 寻找数据集下某集合的类别与数目情况
+    # 寻找数据集下某集合的的RGB均值
     # annotation_path：注释文件所在目录
     # mainset: 数据集名
     Basenames = []
@@ -478,11 +454,26 @@ def annotation_meanpixel(dataset_path,mainsets):
         total[2] += np.mean(r)
         if i%300==0:
             print(i)
-
     print(total)
     mean=np.divide(total,total_num)
     print(mean)
     return mean
+
+def annotation_maxGT(dataset_path,mainsets=None):
+    # 寻找数据集下某集合中，单张图片最多包含多少个GT
+    # annotation_path：注释文件所在目录
+    # mainset: 数据集名
+
+    maxGT = 0
+    Annotation_path = os.path.join(dataset_path, 'Annotations')
+    files = os.listdir(Annotation_path)
+    for filename in files:
+        tree = ET.parse(os.path.join(Annotation_path, filename))
+        objs = tree.findall('object')
+        if len(objs)>maxGT:
+            maxGT=len(objs)
+
+    return maxGT
 
 if __name__ == '__main__':
     # from datasets.pascal_voc import pascal_voc
@@ -490,7 +481,8 @@ if __name__ == '__main__':
     # print(annotation_classes_Mainset(annopath, 'test650'))
 
     datasetpath='E:\\fjj\\SeaShips_SMD'#
-    annotation_meanpixel(datasetpath,['all'])
+    #annotation_meanpixel(datasetpath,['all'])
+    print(annotation_maxGT(datasetpath))
     '''
     class_names = annotation_classes_name(path)
     print(class_names)

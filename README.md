@@ -25,6 +25,6 @@ Metrics of dataset with **VOC** format
 
 ​	class_name: modify as the class_names in your dataset.
 
-----------------------------------------------------------------------------------------
+-----------------------------
 
 ​	
