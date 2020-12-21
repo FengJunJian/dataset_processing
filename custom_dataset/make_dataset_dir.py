@@ -1,6 +1,6 @@
 import os
 
-root_dir='Dataset'
+root_dir='E:/fjj/Dataset1000_1'
 Annotation_path=os.path.join(root_dir,'Annotations')
 ImageSets_path=os.path.join(root_dir,'ImageSets')
 Main_path=os.path.join(ImageSets_path,'Main')

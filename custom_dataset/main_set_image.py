@@ -4,7 +4,7 @@ make the mainset according the name of images
 import os
 import glob
 import shutil
-datasetPath='E:/fjj/Dataset100'
+datasetPath='E:/fjj/Dataset1000_1'
 JPEGImagesPah=os.path.join(datasetPath,'JPEGImages')
 MainPath=os.path.join(datasetPath,'ImageSets/Main')
 files=os.listdir(JPEGImagesPah)
@@ -15,6 +15,7 @@ with open(os.path.join(MainPath,'test.txt'),'w') as f:
 targetAnnoPath=os.path.join(datasetPath,'Annotations')
 sourceAnnoPath=os.path.join('E:/fjj/SeaShips_SMD/Annotations')
 for basename in basenames:
+    basename=basename.strip()
     shutil.copy(os.path.join(sourceAnnoPath,basename+'.xml'),targetAnnoPath)
 #files=glob.glob(os.path.join(JPEGImagesPah,'*.jpg'))
 
