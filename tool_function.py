@@ -46,7 +46,7 @@ def write_detection(im, class_ind, dets):
     return im
 #########################################################################################
 
-def get_output_dir(imdb_name, folder,net_name=None):
+def get_output_dir(rootdir,imdb_name, folder,net_name=None):
     """Return the directory where experimental artifacts are placed.
     If the directory des not exist, it is created.
 
@@ -56,7 +56,7 @@ def get_output_dir(imdb_name, folder,net_name=None):
     if folder is None:
         folder = 'default'
 
-    outdir = os.path.abspath(os.path.join(abs_path, folder, net_name, imdb_name))
+    outdir = os.path.abspath(os.path.join(rootdir, folder, net_name, imdb_name))
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     return outdir

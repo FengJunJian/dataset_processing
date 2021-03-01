@@ -51,3 +51,6 @@ def write_detection(im, class_ind, dets):
                          fontFace, fontScale, (0, 0, 0), thiness)
     return im
 
+if __name__ == '__main__':
+    path='E:/fjj/SeaShips_SMD/JPEGImages/'
+
