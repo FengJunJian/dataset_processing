@@ -4,6 +4,16 @@
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ross Girshick and Xinlei Chen
 # --------------------------------------------------------
+'''
+解析voc
+自定义函数：
+annotation_classes_file：某类别对应的所有样本
+annotation_classes_Mainset：寻找数据集下某集合的各类别与对应数目情况
+annotation_classes_name：寻找数据集注释下所有的类别名
+annotation_meanpixel：寻找数据集下某集合的的RGB均值
+annotation_maxGT：寻找数据集下，单张图片最多包含多少个GT
+
+'''
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -407,7 +417,7 @@ def annotation_classes_Mainset(annotation_path,mainset):
 
 def annotation_classes_name(dataset_path):
     from collections import Counter
-    # 寻找数据集注释下所有的类别
+    # 寻找数据集注释下所有的类别名
     # path：注释文件所在目录
     class_names = []
     total_objs=0
@@ -481,8 +491,10 @@ if __name__ == '__main__':
     # print(annotation_classes_Mainset(annopath, 'test650'))
 
     datasetpath='E:\\fjj\\SeaShips_SMD'#
+    #print(annotation_maxGT(datasetpath))
     #annotation_meanpixel(datasetpath,['all'])
-    print(annotation_maxGT(datasetpath))
+    a=annotation_classes_name(datasetpath)
+    print(a)
     '''
     class_names = annotation_classes_name(path)
     print(class_names)

@@ -1,3 +1,6 @@
+'''
+根据bbox的pkl来评估ap
+'''
 import numpy as np
 
 import os
