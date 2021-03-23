@@ -466,7 +466,7 @@ def annotation_meanpixel(dataset_path,mainsets):
             print(i)
     print(total)
     mean=np.divide(total,total_num)
-    print(mean)
+    print('b,g,r',mean)
     return mean
 
 def annotation_maxGT(dataset_path,mainsets=None):
@@ -493,8 +493,9 @@ if __name__ == '__main__':
     datasetpath='E:\\fjj\\SeaShips_SMD'#
     #print(annotation_maxGT(datasetpath))
     #annotation_meanpixel(datasetpath,['all'])
-    a=annotation_classes_name(datasetpath)
-    print(a)
+    #a=annotation_classes_name(datasetpath)
+    annotation_meanpixel(datasetpath,['all'])
+    #print(a)
     '''
     class_names = annotation_classes_name(path)
     print(class_names)

@@ -5,18 +5,18 @@
 import os
 import xml.etree.ElementTree as ET
 
-path='Annotations'
-mainset_path='ImageSets/Main/tmp.txt'
-saveset_path='ImageSets/Main/tmp.txt'
+path='E:/fjj/SeaShips_SMD'
+mainset_path='ImageSets/Main/label1.txt'
+saveset_path='ImageSets/Main/label1r.txt'
 filenames=None
-with open(mainset_path,'r') as f:
+with open(os.path.join(path,mainset_path),'r') as f:
     lines=f.readlines()
     filenames=[line.strip() for line in lines]
 #xmls=os.listdir(path)
 
 strings=''
 for xml in filenames:
-    filename=os.path.join(path,xml+'.xml')
+    filename=os.path.join(path,'Annotations',xml+'.xml')
     tree = ET.parse(filename)
     size=tree.find('size')
     width=float(size.find('width').text)
@@ -47,7 +47,7 @@ for xml in filenames:
         print(filename)
     else:
         strings+=xml+'\n'
-with open(saveset_path,'w') as f:
+with open(os.path.join(path,saveset_path),'w') as f:
     f.write(strings)
 
 # if flag:
