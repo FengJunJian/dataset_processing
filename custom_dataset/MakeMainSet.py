@@ -1,13 +1,15 @@
 import numpy as np
 import os
 import glob
-abs_path='E:\\fjj\\SeaShips\\'
+abs_path='E:\\fyl\\WIDER_val\\'
 dataset_path=os.path.join(abs_path,'JPEGImages\\')
 MainSet_path=os.path.join(abs_path,'ImageSets\\Main\\')
-flag_num=1
+flag_num=2
 '''
+flag_num:
 0: all.txt
 1: all.txt 返回label与unlabel
+2: subset of all.txt
 '''
 if flag_num==0:#生成 all.txt
     if not os.path.exists(MainSet_path):
@@ -50,5 +52,12 @@ elif flag_num==1:#生成label与unlabel训练集
             for ind in range(int(len(unlabelset)*np.math.pow(2,-i))):
                 f.write(unlabelset[ind] + '\n')
 elif flag_num==2:
-    pass
+    all = []
+    with open(os.path.join(MainSet_path, 'all.txt'), 'r') as f:
+        all = [x.strip() for x in f.readlines()]
+    test_num = 1300
+    testset = all[:1300]
+    with open(os.path.join(MainSet_path,'test%d.txt'%test_num),'w') as f:
+        for data in testset:
+            f.write(data+'\n')
 

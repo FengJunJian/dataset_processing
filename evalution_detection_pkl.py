@@ -19,7 +19,7 @@ def main():
     file_root = '../data_processing_cache/'
     imdb, roidb = combined_roidb("shipdataset", split_name,dataset_path)  # 测试数据集test1300,test650
     # unimdb, unroidb=combined_roidb_un("unlabel_dataset",'unlabel_train','semi_unlabeled_dir')
-    output_dir = get_output_dir(file_root,imdb.name, log_path, model_name)  # 创建文件
+    output_dir = get_output_dir(file_root, log_path, imdb.name,model_name)  # 创建文件
 
     all_boxes = [[[] for _ in range(imdb.num_images)]
                  for _ in range(imdb.num_classes)]
