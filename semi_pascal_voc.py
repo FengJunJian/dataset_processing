@@ -440,6 +440,8 @@ def annotation_classes_name(dataset_path):
             class_names.append(name)
     return dict(Counter(class_names))
 
+
+
 def annotation_meanpixel(dataset_path,mainsets):
     #from collections import Counter
     # 寻找数据集下某集合的的RGB均值
@@ -484,6 +486,40 @@ def annotation_maxGT(dataset_path,mainsets=None):
             maxGT=len(objs)
 
     return maxGT
+
+def annotation_onefile(xmlpath):
+    """
+    加载一张图片的GT
+    Load image and bounding boxes info from XML file in the PASCAL VOC
+    format.
+    """
+    filename = xmlpath#os.path.join(self._data_path, 'Annotations', index + '.xml')
+    # print(filename)
+    tree = ET.parse(filename)
+    objs = tree.findall('object')
+
+    num_objs = len(objs)
+
+    boxes = np.zeros((num_objs, 4), dtype=np.int16)
+    gt_classes = []
+
+    # Load object bounding boxes into a data frame.
+    for ix, obj in enumerate(objs):
+        bbox = obj.find('bndbox')
+        # Make pixel indexes 0-based
+        x1 = float(bbox.find('xmin').text) - 1
+        y1 = float(bbox.find('ymin').text) - 1
+        x2 = float(bbox.find('xmax').text) - 1
+        y2 = float(bbox.find('ymax').text) - 1
+        cls = obj.find('name').text.strip()
+        boxes[ix, :] = [x1, y1, x2, y2]
+        gt_classes.append(cls)
+        #overlaps[ix, cls] = 1.0
+        #seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
+
+    #overlaps = scipy.sparse.csr_matrix(overlaps)
+
+    return boxes,gt_classes
 
 if __name__ == '__main__':
     # from datasets.pascal_voc import pascal_voc

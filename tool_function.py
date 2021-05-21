@@ -13,6 +13,7 @@ from imdb import imdb as imdb2
 from semi_factory import get_imdb
 import roidb as rdl_roidb
 import os
+import pickle
 ###########################################################################################
 hsv_tuples = [(x / len(CLASSES), 1., 1.)
                       for x in range(len(CLASSES))]
@@ -45,7 +46,7 @@ def write_detection(im, class_ind, dets):
                          fontFace, fontScale, (0, 0, 0), thiness)
     return im
 #########################################################################################
-
+#数据集读取
 def get_output_dir(rootdir,imdb_name,folder,net_name=''):
     """Return the directory where experimental artifacts are placed.
     If the directory des not exist, it is created.
@@ -114,3 +115,14 @@ def combined_roidb_un(imdb_names,image_set='train',dataset_path=None):
         imdb = get_imdb(imdb_names, image_set,dataset_path)
     return imdb, roidb
 #################################################################################################################
+#检测结果保存
+def detection2pkl(num_images,num_classes,bboxes,scores):
+    pass
+    # all_boxes = [[[] for _ in range(num_images)]
+    #              for _ in range(num_classes)]
+    #
+    # det_boxes = np.concatenate([bboxes, scores], axis=-1)
+    #
+    # det_file = 'detections.pkl'
+    # with open(det_file, 'wb') as f:
+    #     pickle.dump(all_boxes, f, pickle.HIGHEST_PROTOCOL)

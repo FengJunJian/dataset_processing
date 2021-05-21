@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 import colorsys
+from semi_pascal_voc import annotation_onefile
 CLASSES=('__background__',#0
                     'passenger ship',#1
                     'ore carrier',#2
@@ -51,6 +52,28 @@ def write_detection(im, class_ind, dets):
                          fontFace, fontScale, (0, 0, 0), thiness)
     return im
 
+def write_bb(im,gts):
+    for i in range(len(gts)):
+        bbox = gts[i, :4].astype(np.int32)
+        im = cv2.rectangle(im, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0,0,0), 3)
+    return im
+
+def draw_onefile():
+    files=['DSC_5756_12','DSC_6586_24','MVI_1587_VIS_00152','MVI_1619_VIS_00430']
+    for file in files:
+        imgpath=os.path.join('E:/',file+'.jpg')
+        basename = os.path.splitext(os.path.basename(imgpath))[0]
+        xmlpath=os.path.join('E:\paper\专利半监督船舶半自动标注\终稿\图/',basename+'.xml')
+
+        gts,cls=annotation_onefile(xmlpath)
+        im=cv2.imread(imgpath)
+        im=write_bb(im,gts)
+        # cv2.imshow('a',im)
+        # cv2.waitKey(2)
+        cv2.imwrite(os.path.join('E:/','w'+basename+'.jpg'),im)
+
+
 if __name__ == '__main__':
     path='E:/fjj/SeaShips_SMD/JPEGImages/'
+    draw_onefile()
 

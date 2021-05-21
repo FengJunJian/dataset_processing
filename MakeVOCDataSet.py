@@ -2,12 +2,14 @@ import numpy as np
 import os
 from shutil import copy
 import scipy.io as scio
+import cv2
+
 absroot='E:/fyl/WIDER_val/'
 imagePath='images'
 annotaPath='ground_truth'
 JPEGImages='JPEGImages'
 Annotations='Annotations'
-import cv2
+
 
 CLASSES=('__background__',
          'Face'
