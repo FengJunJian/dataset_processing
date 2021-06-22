@@ -1,3 +1,7 @@
+'''
+Convert file .pkl to .txt including mAP.txt and PR.txt
+
+'''
 import pickle
 import os
 import pandas as pd
@@ -9,7 +13,6 @@ paths=['FR']
 
 #path='test1300'
 #files=[file for file in os.listdir(path) if os.path.splitext(file)[1]=='.pkl' and file != 'detections.pkl']#获取其他类别目标PR
-
 
 def detection_walk(dir):#返回含有检测结果的文件路径（含有pr）
     paths = []

@@ -58,7 +58,7 @@ class pascal_voc(imdb):
         self._comp_id = 'comp4'
 
         # PASCAL specific config options
-        self.config = {'cleanup': False,
+        self.config = {'cleanup': True,
                        'use_salt': True,
                        'use_diff': True,  # 不判断diff
                        'matlab_eval': False,
@@ -290,7 +290,7 @@ class pascal_voc(imdb):
             #     use_07_metric=use_07_metric)#
             cachedir = os.path.join(self._devkit_path, 'annotations_cache')
             rec, prec, ap, precision, recall = voc_eval(
-                filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.385,
+                filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.5,
                 use_07_metric=use_07_metric)  # 评估算法 PR曲线
             aps += [ap]
             print(('AP for {} = {:.4f}'.format(cls, ap)))
@@ -348,7 +348,8 @@ class pascal_voc(imdb):
             for cls in self._classes:
                 if cls == '__background__':
                     continue
-                filename = self._get_voc_results_file_template(output_dir).format(cls)
+                filename = self._get_voc_results_file_template(output_dir).format(cls.replace(' ', '_'))
+                #filename = self._get_voc_results_file_template(output_dir).format(cls)
                 os.remove(filename)
         return aps
     def competition_mode(self, on):
