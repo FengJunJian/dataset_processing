@@ -14,6 +14,7 @@ from semi_factory import get_imdb
 import roidb as rdl_roidb
 import os
 import pickle
+import xml.etree.ElementTree as ET
 ###########################################################################################
 hsv_tuples = [(x / len(CLASSES), 1., 1.)
                       for x in range(len(CLASSES))]
@@ -126,3 +127,185 @@ def detection2pkl(num_images,num_classes,bboxes,scores):
     # det_file = 'detections.pkl'
     # with open(det_file, 'wb') as f:
     #     pickle.dump(all_boxes, f, pickle.HIGHEST_PROTOCOL)
+
+def annotation_classes_file(path,class_name):
+    from collections import Counter
+    # 寻找数据集下各类别对应的文件(.xml)
+    # path：注释文件所在目录
+    # class_name: 类别名
+    class_files=[]
+    total_objs=0
+    files = os.listdir(path)
+    for filename in files:
+        tree = ET.parse(os.path.join(path, filename))
+        objs = tree.findall('object')
+        total_objs += len(objs)
+        # boxes = np.zeros((num_objs, 4), dtype=np.uint16)
+        # gt_classes = np.zeros((num_objs), dtype=np.int32)
+        # overlaps = np.zeros((num_objs, self.num_classes), dtype=np.float32)
+        # "Seg" area for pascal is just the box area
+        # seg_areas = np.zeros((num_objs), dtype=np.float32)
+
+        # Load object bounding boxes into a data frame.
+        for ix, obj in enumerate(objs):
+            if(class_name==obj.find('name').text.strip()):
+            #name = obj.find('name').text.strip()
+                class_files.append(filename)
+    print('total objects:',total_objs)
+    return set(class_files)
+
+
+def annotation_classes_Mainset(annotation_path,mainset):
+    from collections import Counter
+    # 寻找数据集下某集合的各类别与对应数目情况
+    # annotation_path：注释文件所在目录
+    # mainset: 数据集名
+    mainset_path=os.path.join(annotation_path,'../ImageSets/Main',mainset+'.txt')
+    basenames=[]
+    with open(mainset_path,'r') as f:
+        basenames=f.readlines()
+    basenames=[basename.strip() for basename in basenames]
+    class_files={}
+    #class_files.setdefault('a',[]).append(1)
+    class_names=[]
+    total_objs=0
+    #files = os.listdir(path)
+    for filename in basenames:
+        tree = ET.parse(os.path.join(annotation_path, filename+'.xml'))
+        objs = tree.findall('object')
+        total_objs += len(objs)
+        for ix, obj in enumerate(objs):
+            name = obj.find('name').text.strip()
+            class_names.append(name)
+            class_files.setdefault(name, []).append(filename)
+
+    print('total objects:',total_objs)
+    print('class_files:',class_files)
+    print('len class:',len(class_files.keys()))
+    return dict(Counter(class_names))
+
+def annotation_classes_name(dataset_path):
+    from collections import Counter
+    # 寻找数据集注释下所有的类别名
+    # path：注释文件所在目录
+    class_names = []
+    total_objs=0
+    Annotation_path=os.path.join(dataset_path,'Annotations')
+    files = os.listdir(Annotation_path)
+    for filename in files:
+        tree = ET.parse(os.path.join(Annotation_path, filename))
+        objs = tree.findall('object')
+        total_objs += len(objs)
+
+        # boxes = np.zeros((num_objs, 4), dtype=np.uint16)
+        # gt_classes = np.zeros((num_objs), dtype=np.int32)
+        # overlaps = np.zeros((num_objs, self.num_classes), dtype=np.float32)
+        # "Seg" area for pascal is just the box area
+        # seg_areas = np.zeros((num_objs), dtype=np.float32)
+
+        # Load object bounding boxes into a data frame.
+        for ix, obj in enumerate(objs):
+            name = obj.find('name').text.strip()
+            class_names.append(name)
+    return dict(Counter(class_names))
+
+
+
+def annotation_meanpixel(dataset_path,mainsets):
+    #from collections import Counter
+    # 寻找数据集下某集合的的RGB均值
+    # annotation_path：注释文件所在目录
+    # mainset: 数据集名
+    Basenames = []
+    for mainset in mainsets:
+        mainset_path = os.path.join(dataset_path, 'ImageSets/Main', mainset + '.txt')
+        with open(mainset_path, 'r') as f:
+            basenames = f.readlines()
+        Basenames = Basenames+[basename.strip() for basename in basenames]
+
+    JPEGpath=os.path.join(dataset_path,'JPEGImages')
+    fullnames=[os.path.join(JPEGpath,basename+'.jpg') for basename in Basenames]
+    total_num=len(fullnames)
+    total=np.zeros(3,np.int64)
+    for i,filename in enumerate(fullnames):
+        img=cv2.imread(filename)
+        b,g,r=cv2.split(img)
+        total[0] += np.mean(b)
+        total[1] += np.mean(g)
+        total[2] += np.mean(r)
+        if i%300==0:
+            print(i)
+    print(total)
+    mean=np.divide(total,total_num)
+    print('b,g,r',mean)
+    return mean
+
+def annotation_maxGT(dataset_path,mainsets=None):
+    # 寻找数据集下某集合中，单张图片最多包含多少个GT
+    # annotation_path：注释文件所在目录
+    # mainset: 数据集名
+
+    maxGT = 0
+    Annotation_path = os.path.join(dataset_path, 'Annotations')
+    files = os.listdir(Annotation_path)
+    for filename in files:
+        tree = ET.parse(os.path.join(Annotation_path, filename))
+        objs = tree.findall('object')
+        if len(objs)>maxGT:
+            maxGT=len(objs)
+
+    return maxGT
+
+def annotation_onefile(xmlpath):
+    """
+    加载一张图片的GT
+    Load image and bounding boxes info from XML file in the PASCAL VOC
+    format.
+    """
+    filename = xmlpath#os.path.join(self._data_path, 'Annotations', index + '.xml')
+    # print(filename)
+    tree = ET.parse(filename)
+    objs = tree.findall('object')
+
+    num_objs = len(objs)
+
+    boxes = np.zeros((num_objs, 4), dtype=np.int16)
+    gt_classes = []
+
+    # Load object bounding boxes into a data frame.
+    for ix, obj in enumerate(objs):
+        bbox = obj.find('bndbox')
+        # Make pixel indexes 0-based
+        x1 = float(bbox.find('xmin').text) - 1
+        y1 = float(bbox.find('ymin').text) - 1
+        x2 = float(bbox.find('xmax').text) - 1
+        y2 = float(bbox.find('ymax').text) - 1
+        cls = obj.find('name').text.strip()
+        boxes[ix, :] = [x1, y1, x2, y2]
+        gt_classes.append(cls)
+        #overlaps[ix, cls] = 1.0
+        #seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
+
+    #overlaps = scipy.sparse.csr_matrix(overlaps)
+
+    return boxes,gt_classes
+
+if __name__ == '__main__':
+    # from datasets.pascal_voc import pascal_voc
+    # annopath = 'E:\\fjj\\SeaShips_SMD\\Annotations'#
+    # print(annotation_classes_Mainset(annopath, 'test650'))
+
+    datasetpath='E:\\fjj\\SeaShips_SMD'#
+    print(annotation_maxGT(dataset_path=datasetpath))
+    #print(annotation_maxGT(datasetpath))
+    #annotation_meanpixel(datasetpath,['all'])
+    #a=annotation_classes_name(datasetpath)
+    #annotation_meanpixel(datasetpath,['all'])
+    #print(a)
+    '''
+    class_names = annotation_classes_name(path)
+    print(class_names)
+    with open('H:\\fjj\\SeaShips_SMD\\class.txt', 'w') as f:
+        for name in class_names.keys():
+            f.writelines(name + '\n')
+      '''
