@@ -22,7 +22,7 @@ def main():
     split_name='test1300'#'normal'
     #model_name='yolo'
     #log_path=model_name+'_test_0'
-    pkl_root = 'E:/fjj/semi_ship_test/vgg16_semi/test1300/label0_unlabel0_15000top250/semi_model'#'../data_processing_cache'#'../data_processing_cache/'
+    pkl_root = 'E:/fjj/keras-yolo3-master/test1300/yolov3/results'#'../data_processing_cache'#'../data_processing_cache/'
     pkl_file = os.path.join(pkl_root , 'detections.pkl')
     imdb, roidb = combined_roidb("shipdataset", split_name,dataset_path)  # 测试数据集test1300,test650
     # unimdb, unroidb=combined_roidb_un("unlabel_dataset",'unlabel_train','semi_unlabeled_dir')

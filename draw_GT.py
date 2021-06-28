@@ -2,7 +2,8 @@ import os
 import cv2
 import numpy as np
 import colorsys
-from semi_pascal_voc import annotation_onefile
+
+from tool_function import annotation_onefile
 CLASSES=('__background__',#0
                     'passenger ship',#1
                     'ore carrier',#2
@@ -28,46 +29,52 @@ colors = list(
         colors))
 colors=[c[::-1] for c in colors]
 
-def write_detection(im, class_ind, dets):
+def write_detection_batch(im, class_inds, dets):
     # inds = np.where(dets[:, -1] >= thresh)[0]
     # if len(inds) == 0:
     #     return im
     for i in range(len(dets)):
         bbox = dets[i, :4].astype(np.int32)
         # score = dets[i, -1]
-        im = cv2.rectangle(im, (bbox[0], bbox[1]), (bbox[2], bbox[3]), colors[class_ind], 10)
+        im = cv2.rectangle(im, (bbox[0], bbox[1]), (bbox[2], bbox[3]), colors[class_inds[i]], 10)
 
-        string = '%s' % (CLASSES[class_ind])
+        string = '%s' % (CLASSES[class_inds[i]])
         fontFace = cv2.FONT_HERSHEY_COMPLEX
-        fontScale = 2
-        thiness = 2
+        fontScale=2
+        thiness=2
 
-        text_size, baseline = cv2.getTextSize(string, fontFace, fontScale, thiness)
-        text_origin = (bbox[0], bbox[1])  # - text_size[1]
+        text_size,baseline = cv2.getTextSize(string, fontFace, fontScale, thiness)
+        text_origin = (bbox[0],  bbox[1])#- text_size[1]
 
-        im = cv2.rectangle(im, (text_origin[0] - 2, text_origin[1] + 1),
-                           (text_origin[0] + text_size[0] + 1, text_origin[1] - text_size[1] - 2),
-                           colors[class_ind], cv2.FILLED)
-        im = cv2.putText(im, '%s' % (CLASSES[class_ind]), text_origin,
+        im=cv2.rectangle(im,(text_origin[0]-2,text_origin[1]+1),(text_origin[0]+text_size[0]+1,text_origin[1]-text_size[1]-2),colors[class_inds[i]],cv2.FILLED)
+        im = cv2.putText(im, '%s' % (CLASSES[class_inds[i]]), text_origin,
                          fontFace, fontScale, (0, 0, 0), thiness)
     return im
 
-def write_bb(im,gts):
-    for i in range(len(gts)):
-        bbox = gts[i, :4].astype(np.int32)
+
+def write_bb_black(im,dets):
+    for i in range(len(dets)):
+        bbox = dets[i, :4].astype(np.int32)
         im = cv2.rectangle(im, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0,0,0), 3)
     return im
 
 def draw_onefile():
-    files=['DSC_5756_12','DSC_6586_24','MVI_1587_VIS_00152','MVI_1619_VIS_00430']
+    #files=['DSC_5756_12','DSC_6586_24','MVI_1587_VIS_00152','MVI_1619_VIS_00430']
+    files=['002365','MVI_1478_VIS_00405','MVI_1474_VIS_00429','MVI_1486_VIS_00013','003426']
+    root_xml='E:/fjj/SeaShips_SMD/Annotations'#'E:\paper\专利半监督船舶半自动标注\终稿\图/
+    root_im='E:/fjj/SeaShips_SMD/JPEGImages'#'E:/'
+    _class_to_ind = dict(list(zip(CLASSES, list(range(len(CLASSES))))))
     for file in files:
-        imgpath=os.path.join('E:/',file+'.jpg')
+        imgpath=os.path.join(root_im,file+'.jpg')
         basename = os.path.splitext(os.path.basename(imgpath))[0]
-        xmlpath=os.path.join('E:\paper\专利半监督船舶半自动标注\终稿\图/',basename+'.xml')
+        xmlpath=os.path.join(root_xml,basename+'.xml')
 
         gts,cls=annotation_onefile(xmlpath)
+
+        class_inds=[_class_to_ind[c] for c in cls]
         im=cv2.imread(imgpath)
-        im=write_bb(im,gts)
+        # im=write_bb_black(im,gts)
+        im = write_detection_batch(im,class_inds, gts)
         # cv2.imshow('a',im)
         # cv2.waitKey(2)
         cv2.imwrite(os.path.join('E:/','w'+basename+'.jpg'),im)
