@@ -100,7 +100,7 @@ def draw_onefile():
         class_inds=[_class_to_ind[c] for c in cls]
         im=cv2.imread(imgpath)
         # im=write_bb_black(im,gts)
-        im = write_detection_batch(im,class_inds, gts)
+        im = write_detection_batch(im,class_inds, gts,CLASSES,colors)
         # cv2.imshow('a',im)
         # cv2.waitKey(2)
         cv2.imwrite(os.path.join('E:/','w'+basename+'.jpg'),im)
