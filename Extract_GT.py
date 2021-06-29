@@ -7,7 +7,7 @@ import os
 import cv2
 import numpy as np
 from config import CLASSES
-from tool_function import combined_roidb
+from annotation_function import combined_roidb
 
 # CLASSES_dict=dict(list(zip(CLASSES, list(range(len(CLASSES))))))
 def main():

@@ -2,8 +2,8 @@ import os
 import cv2
 import numpy as np
 
-from tool_function import combined_roidb
-from tool_function import write_detection
+from annotation_function import combined_roidb
+from annotation_function import write_detection
 
 def main():
     dataset_path = 'E:/fjj/SeaShips_SMD/'

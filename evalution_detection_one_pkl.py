@@ -12,8 +12,8 @@ import numpy as np
 import os
 import pickle
 
-from tool_function import combined_roidb
-from tool_function import get_output_dir
+from annotation_function import combined_roidb
+from annotation_function import get_output_dir
 
 def main():
 
