@@ -103,7 +103,8 @@ def draw_onefile():
         im = write_detection_batch(im,class_inds, gts,CLASSES,colors)
         # cv2.imshow('a',im)
         # cv2.waitKey(2)
-        cv2.imwrite(os.path.join('E:/','w'+basename+'.jpg'),im)
+        cv2.imencode('.jpg',im)[1].tofile(os.path.join('E:/paper/半监督船舶检测en/复杂场景图1/','w'+basename+'.jpg'))
+        #cv2.imwrite(os.path.join('E:/paper/半监督船舶检测en/复杂场景图1/','w'+basename+'.jpg'),im)
 
 
 if __name__ == '__main__':
