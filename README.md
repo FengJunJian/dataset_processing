@@ -28,3 +28,7 @@ class_name: modify as the class_names in your dataset.
 --------------------------------------
 In rename_classname.py ...
 
+two tool files:visual_function.py,annotation_function.py
+annotation_function.py: mainly for annotation processing
+visual_function.py:mainly for visualization such as writing boundingboxes.
+
