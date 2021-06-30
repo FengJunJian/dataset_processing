@@ -4,7 +4,7 @@ import pickle as pkl
 import colorsys
 from annotation_function import combined_roidb
 from annotation_function import get_output_dir
-from visual_function import write_detection_batch
+from imgbb_function import write_detection_batch
 import cv2
 CLASSES=('__background__',#0
                     'passenger ship',#1
@@ -67,6 +67,7 @@ boxes:shape (batch,5) :np.array([[xmin_1,ymin_1,xmax_1,ymax_1,score_1],......,[x
 #     bboxes_dict[imdb._image_index[i]]=bboxes[:,i]
 
 drawimg_names=['MVI_1478_VIS_00405','002365','MVI_1486_VIS_00013','MVI_1474_VIS_00429','003426']
+
 
 for d in dirs:
     if len(os.path.splitext(d)[1]) != 0:
