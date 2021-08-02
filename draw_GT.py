@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 import colorsys
-from visual_function import write_detection_batch
+from imgbb_function import write_detection_batch,write_detection_batch1
 
 from annotation_function import annotation_onefile
 CLASSES=('__background__',#0
@@ -87,6 +87,7 @@ def write_bb_black(im,dets):
 def draw_onefile():
     #files=['DSC_5756_12','DSC_6586_24','MVI_1587_VIS_00152','MVI_1619_VIS_00430']
     files=['002365','MVI_1478_VIS_00405','MVI_1474_VIS_00429','MVI_1486_VIS_00013','003426']
+    #files = ['MVI_1478_VIS_00405', ]
     root_xml='E:/fjj/SeaShips_SMD/Annotations'#'E:\paper\专利半监督船舶半自动标注\终稿\图/
     root_im='E:/fjj/SeaShips_SMD/JPEGImages'#'E:/'
     _class_to_ind = dict(list(zip(CLASSES, list(range(len(CLASSES))))))
@@ -103,7 +104,7 @@ def draw_onefile():
         im = write_detection_batch(im,class_inds, gts,CLASSES,colors)
         # cv2.imshow('a',im)
         # cv2.waitKey(2)
-        cv2.imencode('.jpg',im)[1].tofile(os.path.join('E:/paper/半监督船舶检测en/复杂场景图1/','w'+basename+'.jpg'))
+        cv2.imencode('.jpg',im)[1].tofile(os.path.join('E:/paper/半监督船舶检测en/复杂场景图1/',basename+'.jpg'))
         #cv2.imwrite(os.path.join('E:/paper/半监督船舶检测en/复杂场景图1/','w'+basename+'.jpg'),im)
 
 

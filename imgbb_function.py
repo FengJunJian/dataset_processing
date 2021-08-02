@@ -93,3 +93,17 @@ def write_detection_batch(im, class_inds, dets,CLASSES,colors):
         cv2.putText(im, string, text_origin,
                     fontFace, fontScale, (0, 0, 0), thiness, lineType=-1, )
     return im
+
+def crop_bb_transform(bb_labels,ROIrectangle,im_roi_ratio=1.0):
+    boxes = bb_labels.copy()
+
+    boxes[:, 0:4:2] = np.maximum(np.minimum(boxes[:, 0:4:2], ROIrectangle[2]), ROIrectangle[0])
+    boxes[:, 1:4:2] = np.maximum(np.minimum(boxes[:, 1:4:2], ROIrectangle[3]), ROIrectangle[1])
+
+    inds = np.where(np.bitwise_not(np.bitwise_or((boxes[:, 2] - boxes[:, 0]) == 0, (boxes[:, 3] - boxes[:, 1]) == 0)))[
+        0]
+    boxes_crop = boxes[inds].astype(np.float32)
+    boxes_crop[:, 0:4:2] -= ROIrectangle[0]
+    boxes_crop[:, 1:4:2] -= ROIrectangle[1]
+    boxes_crop[:, 0:4] *= im_roi_ratio
+    return boxes_crop
