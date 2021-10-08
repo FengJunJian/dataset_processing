@@ -1,4 +1,4 @@
-#import os
+import os
 import cv2
 import numpy as np
 #import colorsys
@@ -94,7 +94,33 @@ def write_detection_batch(im, class_inds, dets,CLASSES,colors):
                     fontFace, fontScale, (0, 0, 0), thiness, lineType=-1, )
     return im
 
+def save_roi_batch(imname, bboxes, cls,save_root):
+    basename=os.path.splitext(os.path.basename(imname))[0]
+    im=cv2.imread(imname)
+    H,W,C=im.shape
+    for i in range(len(bboxes)):
+        xmin = max(bboxes[i][0],0)
+        ymin = max(bboxes[i][1],0)
+        xmax = min(bboxes[i][2]+1,W)
+        ymax = min(bboxes[i][3]+1,H)
+        c=cls[i]
+        roi = im[ymin:ymax, xmin:xmax]
+        save_name = os.path.join(save_root, c.replace(' ','_'), '%s_%d.jpg' % (basename, i))
+        try:
+            cv2.imwrite(save_name, roi)
+            print('%s:%d bboxes'%(basename,len(bboxes)))
+        except:
+            print('##########\nError:%s:%d bboxes\n##########'%(basename,len(bboxes)))
+            continue
+    return
+
 def crop_bb_transform(bb_labels,ROIrectangle,im_roi_ratio=1.0):
+    '''
+    裁剪缩放图片，以及其GT的变换
+    bb_labels:(xmin,ymin,xmax,ymax,label)
+    ROIrectangle: 裁剪框
+    im_roi_ratio: 缩放比例
+    '''
     boxes = bb_labels.copy()
 
     boxes[:, 0:4:2] = np.maximum(np.minimum(boxes[:, 0:4:2], ROIrectangle[2]), ROIrectangle[0])

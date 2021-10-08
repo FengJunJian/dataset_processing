@@ -8,6 +8,8 @@ import cv2
 import numpy as np
 from config import CLASSES
 from annotation_function import combined_roidb
+from imgbb_function import save_roi_batch
+from annotation_function import annotation_onefile
 
 # CLASSES_dict=dict(list(zip(CLASSES, list(range(len(CLASSES))))))
 def main():
@@ -49,6 +51,31 @@ def main():
         count += 1
         #cv2.imwrite(os.path.join(save_root_path,basename),img)
 
+def save_files(root):
+    save_root='../data_processing_cache/Classification'
+    if not os.path.exists(save_root):
+        os.mkdir(save_root)
+    for i in range(1,len(CLASSES)):
+        new_path=os.path.join(save_root,CLASSES[i].replace(' ','_'))
+        if not os.path.exists(new_path):
+            os.mkdir(new_path)
+
+    root_xml=os.path.join(root,'Annotations')#'E:\paper\专利半监督船舶半自动标注\终稿\图/
+    root_im=os.path.join(root,'JPEGImages')#'E:/'
+    files=os.listdir(root_im)
+    _class_to_ind = dict(list(zip(CLASSES, list(range(len(CLASSES))))))
+    for i,file in enumerate(files):
+        imgpath=os.path.join(root_im,file)
+        basename = os.path.splitext(os.path.basename(imgpath))[0]
+
+        xmlpath=os.path.join(root_xml,basename+'.xml')
+        if not os.path.exists(xmlpath):
+            continue
+        gts,cls=annotation_onefile(xmlpath)
+
+        save_roi_batch(imgpath,gts,cls,save_root)
 
 if __name__ == '__main__':
-    main()
+    path = 'E:/fjj/SeaShips_SMD/'
+    save_files(path)
+    # main() #old function

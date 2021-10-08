@@ -261,6 +261,7 @@ def annotation_onefile(xmlpath):
     加载一张图片的GT
     Load image and bounding boxes info from XML file in the PASCAL VOC
     format.
+    return (xmin,ymin,xmax,ymax)
     """
     filename = xmlpath#os.path.join(self._data_path, 'Annotations', index + '.xml')
     # print(filename)
