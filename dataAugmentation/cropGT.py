@@ -25,8 +25,6 @@ for i in range(len(anchora)):
         plt.imsave(os.path.join(root, str(i) + str(j) + imgnamea), roi)
         # plt.imshow(roi)
 
-
-
 imagepathb=os.path.join(root,imgnameb)
 imgb=plt.imread(imagepathb)
 for i in range(len(anchorb)):
