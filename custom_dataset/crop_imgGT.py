@@ -62,7 +62,7 @@ def draw_onefile():
         dict_files_rects[files[i]]=np.array(rects[i],np.int)
 
     #rect_w=rect[3]/rect[2]
-    root_xml='E:/fjj/SeaShips_SMD/Annotations'#'E:\paper\专利半监督船舶半自动标注\终稿\图/
+    root_xml='E:/fjj/SeaShips_SMD/Annotations'#'
     root_im='E:/fjj/SeaShips_SMD/JPEGImages'#'E:/'
     _class_to_ind = dict(list(zip(CLASSES, list(range(len(CLASSES))))))
     for i in range(len(files)):

@@ -60,7 +60,7 @@ def save_files(root):
         if not os.path.exists(new_path):
             os.mkdir(new_path)
 
-    root_xml=os.path.join(root,'Annotations')#'E:\paper\专利半监督船舶半自动标注\终稿\图/
+    root_xml=os.path.join(root,'Annotations')#
     root_im=os.path.join(root,'JPEGImages')#'E:/'
     files=os.listdir(root_im)
     _class_to_ind = dict(list(zip(CLASSES, list(range(len(CLASSES))))))

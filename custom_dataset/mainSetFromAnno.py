@@ -19,7 +19,7 @@ basenames=[os.path.splitext(file)[0]+'\n' for file in xmlfiles]
 MainSetPath=os.path.join(datasetPath,'ImageSets/Main')
 if not os.path.exists(MainSetPath):
     os.makedirs(MainSetPath)
-with open(os.path.join(MainSetPath,'all.txt'),'w',encoding='gbk') as f:
+with open(os.path.join(MainSetPath,'all.txt'),'w',encoding='utf-8') as f:
     for basename in basenames:
         basename=basename.strip()
         f.write(basename+'\n')

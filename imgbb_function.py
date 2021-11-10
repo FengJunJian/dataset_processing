@@ -1,7 +1,8 @@
 import os
 import cv2
 import numpy as np
-#import colorsys
+import colorsys
+from PIL import Image,ImageFont,ImageDraw
 
 class visual(object):
     def __init__(self,CLASSES,colors):
@@ -77,7 +78,7 @@ def write_detection_batch(im, class_inds, dets,CLASSES,colors):
         #str1=CLASSES[class_inds[i]]
         string = '%s' % (CLASSES[class_inds[i]].lower())
         fontFace = cv2.FONT_HERSHEY_COMPLEX#cv2.FONT_HERSHEY_COMPLEX
-        fontScale=2.#2
+        fontScale=1.#2
         thiness=2#2
 
         text_size,baseline = cv2.getTextSize(string, fontFace, fontScale, thiness)
@@ -92,6 +93,40 @@ def write_detection_batch(im, class_inds, dets,CLASSES,colors):
         im=cv2.rectangle(im, (bbox[0], bbox[1]), (bbox[2], bbox[3]), colors[class_inds[i]], 3)  # 10
         cv2.putText(im, string, text_origin,
                     fontFace, fontScale, (0, 0, 0), thiness, lineType=-1, )
+    return im
+
+def write_detection_PIL(im, class_inds,dets,CLASSES,colors,thiness=2,GT_color=None):
+    font = ImageFont.truetype('C:/Windows/Fonts/simhei.ttf', 30)#
+    for i in range(len(dets)):
+        rectangle_tmp = im.copy()
+        bbox = dets[i, :4].astype(np.int32)
+        class_ind =class_inds[i] #int(dets[i, 4])
+        if class_ind==7:
+            continue
+
+        if GT_color:
+            color=GT_color
+        else:
+            color=colors[class_ind]
+
+        string = CLASSES[class_ind]
+
+        _,_,text_width,text_height=font.getbbox(string)
+        #text_size, baseline = cv2.getTextSize(string, fontFace, fontScale, thiness)
+        text_origin = (bbox[0]-1, bbox[1]-text_height)  #text_height - text_size[1]
+    ###########################################putText
+        cv2.rectangle(rectangle_tmp, (text_origin[0] - 1, text_origin[1] - 1),
+                           (text_origin[0] + text_width + 1, text_origin[1] + text_height + 1),
+                           color, cv2.FILLED)
+        cv2.addWeighted(im, 0.7, rectangle_tmp, 0.3, 0, im)
+        im = cv2.rectangle(im, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color, thiness)
+        img = Image.fromarray(cv2.cvtColor(im, cv2.COLOR_BGR2RGB))
+        draw = ImageDraw.Draw(img)
+        draw.text(text_origin, string, font=font, fill=(0, 0, 0))
+        im=cv2.cvtColor(np.asarray(img),cv2.COLOR_RGB2BGR)
+        # img.show()
+        # im = cv2.putText(im, string, text_origin,
+        #                  fontFace, fontScale, (0, 0, 0), thiness,lineType=-1)
     return im
 
 def save_roi_batch(imname, bboxes, cls,save_root):

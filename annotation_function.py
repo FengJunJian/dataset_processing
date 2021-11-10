@@ -295,8 +295,9 @@ if __name__ == '__main__':
     # from datasets.pascal_voc import pascal_voc
     # annopath = 'E:\\fjj\\SeaShips_SMD\\Annotations'#
     # print(annotation_classes_Mainset(annopath, 'test650'))
-
-    datasetpath='E:\\fjj\\SeaShips_SMD'#
+    #E:\fjj\MarineShips2\ImageSets\Main
+    datasetpath='E:\\fjj\\MarineShips2'##'E:\\fjj\\SeaShips_SMD'#
+    print(annotation_classes_name(datasetpath))
     print(annotation_maxGT(dataset_path=datasetpath))
     #print(annotation_maxGT(datasetpath))
     #annotation_meanpixel(datasetpath,['all'])
