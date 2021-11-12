@@ -254,14 +254,9 @@ def bbox_overlaps(boxes,query_boxes):
                     overlaps[n, k] = iw * ih / ua
     return overlaps
 
-if __name__ == '__main__':
-    import time
-    import cv2
-    import matplotlib.pyplot as plt
-    # img=cv2.imread('../../0004.jpg')
-    # height,width,feat=img.shape[0],img.shape[1],16
-    #height, width, feat = 36, 63, 16
-    height, width, feat =int(576/16), int(704/16), 16#int(576/4), int(704/4), 4 #int(448/4), int(448/4), 4
+
+def generate_samples():
+    height, width, feat = int(576 / 16), int(704 / 16), 16  # int(576/4), int(704/4), 4 #int(448/4), int(448/4), 4
 
     MarineShip_anchors = [[32, 24],
                           [69, 39],
@@ -269,10 +264,10 @@ if __name__ == '__main__':
                           [297, 139],
                           [689, 302], ]
 
-    impath='E:\paper\data/*.jpg'#视频_(172)1.jpg
-    xmlpath='E:\paper\data/*.xml'
-    ims=glob(impath)
-    xmls=glob(xmlpath)
+    impath = 'E:\paper\data/*.jpg'  # 视频_(172)1.jpg
+    xmlpath = 'E:\paper\data/*.xml'
+    ims = glob(impath)
+    xmls = glob(xmlpath)
     Ppath = 'E:/shipz/P'
     Npath = 'E:/shipz/N'
     if not os.path.exists(Ppath):
@@ -280,17 +275,17 @@ if __name__ == '__main__':
     if not os.path.exists(Npath):
         os.makedirs(Npath)
     f = open('E:/shipz/gt.txt', 'w')
-    for i,imp in enumerate(ims):
+    for i, imp in enumerate(ims):
         im = cv2.imdecode(np.fromfile(imp, dtype=np.uint8), -1)
-        basename=os.path.splitext(os.path.basename(imp))[0]
-        im_info=im.shape
-        gt,classes=annotation_onefile(xmls[i])
-        #gt=np.array([[133,341,180,375],[279,336,327,366],[318,334,526,457],[541,347,677,421]])
-        #classes=['fishing ship','fishing ship','fishing ship','fishing ship']
+        basename = os.path.splitext(os.path.basename(imp))[0]
+        im_info = im.shape
+        gt, classes = annotation_onefile(xmls[i])
+        # gt=np.array([[133,341,180,375],[279,336,327,366],[318,334,526,457],[541,347,677,421]])
+        # classes=['fishing ship','fishing ship','fishing ship','fishing ship']
         t = time.time()
-        #a,length = generate_anchors_pre(height,width,feat)
-        a1,length1=generate_anchors_pre_custom(height,width,feat,anchors_WH=np.array(MarineShip_anchors))
-        _allowed_border=0.0
+        # a,length = generate_anchors_pre(height,width,feat)
+        a1, length1 = generate_anchors_pre_custom(height, width, feat, anchors_WH=np.array(MarineShip_anchors))
+        _allowed_border = 0.0
         inds_inside = np.where(
             (a1[:, 0] >= -_allowed_border) &
             (a1[:, 1] >= -_allowed_border) &
@@ -300,29 +295,29 @@ if __name__ == '__main__':
 
         # keep only inside anchors
         anchors = a1[inds_inside, :]
-        overlaps=bbox_overlaps(anchors,gt)
+        overlaps = bbox_overlaps(anchors, gt)
         argmax_overlaps = overlaps.argmax(axis=1)  # 每个anchor与哪个GT交叠最大
         max_overlaps = overlaps[np.arange(len(inds_inside)), argmax_overlaps]  # 每个anchor与gt的最大交叠比
 
         gt_argmax_overlaps = overlaps.argmax(axis=0)  # 每个gt与哪个anchor交叠最大
         gt_max_overlaps = overlaps[gt_argmax_overlaps,
                                    np.arange(overlaps.shape[1])]  ##每个gt与anchors的最大交叠比
-        gt_argmax_overlaps,gt_inds = np.where(overlaps == gt_max_overlaps)  # 具备最大的交叠比的anchors
-        regression_targets=_compute_targets(anchors, gt[argmax_overlaps,:])
+        gt_argmax_overlaps, gt_inds = np.where(overlaps == gt_max_overlaps)  # 具备最大的交叠比的anchors
+        regression_targets = _compute_targets(anchors, gt[argmax_overlaps, :])
 
         for i in range(len(gt_argmax_overlaps)):
-            bb=anchors[gt_argmax_overlaps[i]].astype(np.int)
-            roi=im[bb[1]:bb[3],bb[0]:bb[2]]
-            saveName=basename + '_%d.jpg' % (i)
-            #cv2.imwrite(os.path.join(Ppath,saveName),roi)
-            cv2.imencode('.jpg',roi)[1].tofile(os.path.join(Ppath,saveName))
-            roi_c=classes[gt_inds[i]]
-            roi_r=regression_targets[gt_argmax_overlaps[i]]
-            f.write('%s,%s,%f,%f,%f,%f\n'%(saveName,roi_c,roi_r[0],roi_r[1],roi_r[2],roi_r[3]))
-        inds=np.arange(anchors.shape[0])
-        #Nset=np.unique(np.where(np.bitwise_and(overlaps>0.3 , overlaps != gt_max_overlaps))[0])
-        inds=np.setdiff1d(inds,np.unique(np.where(overlaps>0.2)[0]))
-        for i, Ni in enumerate(np.setdiff1d(inds,gt_argmax_overlaps)):
+            bb = anchors[gt_argmax_overlaps[i]].astype(np.int)
+            roi = im[bb[1]:bb[3], bb[0]:bb[2]]
+            saveName = basename + '_%d.jpg' % (i)
+            # cv2.imwrite(os.path.join(Ppath,saveName),roi)
+            cv2.imencode('.jpg', roi)[1].tofile(os.path.join(Ppath, saveName))
+            roi_c = classes[gt_inds[i]]
+            roi_r = regression_targets[gt_argmax_overlaps[i]]
+            f.write('%s,%s,%f,%f,%f,%f\n' % (saveName, roi_c, roi_r[0], roi_r[1], roi_r[2], roi_r[3]))
+        inds = np.arange(anchors.shape[0])
+        # Nset=np.unique(np.where(np.bitwise_and(overlaps>0.3 , overlaps != gt_max_overlaps))[0])
+        inds = np.setdiff1d(inds, np.unique(np.where(overlaps > 0.2)[0]))
+        for i, Ni in enumerate(np.setdiff1d(inds, gt_argmax_overlaps)):
             bb = anchors[Ni].astype(np.int)
             roi = im[bb[1]:bb[3], bb[0]:bb[2]]
             saveName = basename + '_%d.jpg' % (i)
@@ -331,10 +326,32 @@ if __name__ == '__main__':
 
         print(time.time() - t)
     f.close()
-    #print(a)
-    # for rect in a:
-    #     img=cv2.rectangle(img,a,)
 
+if __name__ == '__main__':
+    import time
+    import cv2
+    import matplotlib.pyplot as plt
+    # img=cv2.imread('../../0004.jpg')
+    # height,width,feat=img.shape[0],img.shape[1],16
+    #height, width, feat = 36, 63, 16
+    im_info=(576,704)#(h,w)
+    height, width, feat =int(im_info[0]/16), int(im_info[1]/32), 16#int(576/4), int(704/4), 4 #int(448/4), int(448/4), 4
 
-    #from IPython import embed
-    #embed()
+    MarineShip_anchors = [[32, 24],
+                          [69, 39],
+                          [141, 68],
+                          [297, 139],
+                          [689, 302], ]
+    a1, length1 = generate_anchors_pre_custom(height, width, feat, anchors_WH=np.array(MarineShip_anchors))
+    _allowed_border = 0.0
+    inds_inside = np.where(
+        (a1[:, 0] >= -_allowed_border) &
+        (a1[:, 1] >= -_allowed_border) &
+        (a1[:, 2] < im_info[1] + _allowed_border) &  # width
+        (a1[:, 3] < im_info[0] + _allowed_border)  # height
+    )[0]
+
+    # keep only inside anchors
+    anchors = a1[inds_inside, :]
+    print(anchors.shape)
+
