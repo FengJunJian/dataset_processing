@@ -7,8 +7,8 @@ from annotation_function import write_detection
 
 def main():
     dataset_path = 'E:/fjj/SeaShips_SMD/'
-    split_name = 'test1300'
-    save_path='GT'
+    split_name = 'draw1'
+    save_path= '../GT'
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     imdb, roidb = combined_roidb("shipdataset", split_name,dataset_path)
