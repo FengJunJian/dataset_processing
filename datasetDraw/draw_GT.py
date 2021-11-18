@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 import colorsys
-from imgbb_function import write_detection_batch,write_detection_PIL
+from datasetDraw.imgbb_function import write_detection_batch,write_detection_PIL
 
 from annotation_function import annotation_onefile
 CLASSES=('__background__',#0
@@ -29,10 +29,7 @@ CLASSES=('__background__',#0
         'Buoy',#4
 )
 CLASSES_C=('__background__',#0
-        '渔船',#1
-        '货船',#2
-        '其他',#3
-        '浮标',#4
+        'target',#1
 )
 hsv_tuples = [(x / len(CLASSES), 1., 1.)
                       for x in range(len(CLASSES))]

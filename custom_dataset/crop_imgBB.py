@@ -4,7 +4,7 @@ import pickle as pkl
 import colorsys
 from annotation_function import combined_roidb
 from annotation_function import get_output_dir
-from imgbb_function import write_detection_batch,crop_bb_transform
+from datasetDraw.imgbb_function import write_detection_batch,crop_bb_transform
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
