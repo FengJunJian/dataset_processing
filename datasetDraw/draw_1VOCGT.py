@@ -19,8 +19,6 @@ def main():
         classes=data['gt_classes']
         img=cv2.imread(img_path)
         for j in set(classes):
-            if j==7:
-                continue
             indexs = np.where(classes == j)
             img=write_detection(img,j,boxes[indexs])
         cv2.imwrite(os.path.join(save_path,basename),img)
