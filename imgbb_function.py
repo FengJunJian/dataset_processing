@@ -37,6 +37,9 @@ class visual(object):
         return im
 
 def write_detection_batch1(im, class_inds, dets,CLASSES,colors):
+    '''
+    only add the bbox and text
+    '''
     # inds = np.where(dets[:, -1] >= thresh)[0]
     # if len(inds) == 0:
     #     return im
@@ -68,6 +71,9 @@ def write_detection_batch1(im, class_inds, dets,CLASSES,colors):
     return im
 
 def write_detection_batch(im, class_inds, dets,CLASSES,colors):
+    '''
+    add the bbox and text and background box
+    '''
     # inds = np.where(dets[:, -1] >= thresh)[0]
     # if len(inds) == 0:
     #     return im

@@ -29,9 +29,8 @@ import scipy.sparse
 
 # from lib.config import config as cfg
 from imdb import imdb
-from voc_eval import voc_eval
+from eval.voc_eval import voc_eval
 import matplotlib.pyplot as plt
-import cv2
 from config import CLASSES
 
 class_name=CLASSES

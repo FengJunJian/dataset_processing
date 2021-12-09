@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 import colorsys
-from datasetDraw.imgbb_function import write_detection_batch,crop_bb_transform
+from imgbb_function import write_detection_batch,crop_bb_transform
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from annotation_function import annotation_onefile

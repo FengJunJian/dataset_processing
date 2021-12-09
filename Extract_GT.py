@@ -7,7 +7,7 @@ import os
 import cv2
 from config import CLASSES
 from annotation_function import combined_roidb
-from datasetDraw.imgbb_function import save_roi_batch
+from imgbb_function import save_roi_batch
 from annotation_function import annotation_onefile
 
 # CLASSES_dict=dict(list(zip(CLASSES, list(range(len(CLASSES))))))

@@ -4,7 +4,7 @@ import pickle as pkl
 import colorsys
 from annotation_function import combined_roidb
 from annotation_function import get_output_dir
-from datasetDraw.imgbb_function import write_detection_batch
+from imgbb_function import write_detection_batch
 import cv2
 CLASSES=('__background__',#0
                     'passenger ship',#1

@@ -225,8 +225,8 @@ def voc_eval(detpath,
 
 def main():
     # pickle
-    path='H:\code\Faster-RCNN\semi_ship1\semi-test600\semi_myvat4000_1/'
-    file=os.path.join(path,'bulk cargo carrier_pr.pkl')
+    path='H:/code/Faster-RCNN/'
+    file=os.path.join(path,'result.pkl')
     with open(file,'rb') as f:
         PR=pickle.load(f)
         voc_ap(PR['rec'],PR['prec'],True)
