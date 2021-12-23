@@ -1,2 +1,6 @@
 /evalution_facedetection_pkl.py
 /evalution_detection_pkl_ssl.py
+evalution_detection_pkl_fr.py
+evalution_detection_pkl_yolo.py
+custom_dataset/data/cache/test1300_gt_roidb.pkl
+custom_dataset/normal.txt
