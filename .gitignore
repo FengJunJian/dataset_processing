@@ -4,3 +4,7 @@ evalution_detection_pkl_fr.py
 evalution_detection_pkl_yolo.py
 custom_dataset/data/cache/test1300_gt_roidb.pkl
 custom_dataset/normal.txt
+*.pyc
+*.pyc
+__pycache__/voc_eval.cpython-36.pyc
+data/cache/test1300_gt_roidb.pkl
