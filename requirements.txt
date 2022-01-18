@@ -53,8 +53,6 @@ imgaug==0.4.0
 immutables==0.16
 importlib-metadata==4.8.1
 ipdb==0.13.9
-ipython @ file:///C:/ci/ipython_1593446240034/work
-ipython-genutils @ file:///tmp/build/80754af9/ipython_genutils_1606773439826/work
 jedi==0.17.0
 joblib==0.16.0
 json-tricks==3.15.5
