@@ -4,6 +4,7 @@ from shutil import copy
 import scipy.io as scio
 import cv2
 
+
 def detection2xml(imgname,width,height,gt,xmlpath,difficult=0):
     '''
     imgname:basename for xml
