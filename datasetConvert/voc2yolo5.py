@@ -1,31 +1,37 @@
 import xml.etree.ElementTree as ET
 from os import getcwd
 import os
-
+import shutil
 # sets=[('2007', 'train'), ('2007', 'val'), ('2007', 'test')]
 # sets=[('seaships_smd', 'label0'), ('seaships_smd', 'test1300'),('seaships_smd', 'label3')]
-sets=[('seaships_smd', 'label2')]
+#sets=[('seaships_smd', 'label2')]
 # classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
-classes = ["passenger ship",
-"ore carrier",
-"general cargo ship",
-"fishing boat",
-"Sail boat",
-"Kayak",
-"flying bird",
-"vessel",
-"Buoy",
-"Ferry",
-"container ship",
-"Other",
-"Boat",
-"Speed boat",
-"bulk cargo carrier"]
+# classes = ["passenger ship",
+# "ore carrier",
+# "general cargo ship",
+# "fishing boat",
+# "Sail boat",
+# "Kayak",
+# "flying bird",
+# "vessel",
+# "Buoy",
+# "Ferry",
+# "container ship",
+# "Other",
+# "Boat",
+# "Speed boat",
+# "bulk cargo carrier"]
+classes=[
+    "boat",
+    "Buoy",
+    "flying bird",
+    "Other",
+]
 ########################New
 #classes=['boat']
-sets=[('SMD_SS','train')]
+sets=[('SMD_SS','train'),('SMD_SS','test'),('SMD_SS','all')]
 
-datasetpath='F:/船舶数据整理/SeaShips_SMD'#'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
+datasetpath='F:/ShipDataset/SeaShips_SMD'#'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
 
 def convert_annotation(datasetname,image_id, list_file,encoding='utf-8'):
     in_file = open(os.path.join(datasetpath,'Annotations/%s.xml'%(image_id)),'r',encoding=encoding)
@@ -41,9 +47,12 @@ def convert_annotation(datasetname,image_id, list_file,encoding='utf-8'):
         else:
             difficult=difficult.text
         cls = obj.find('name').text
-        if cls not in classes or int(difficult)==1:
+        if int(difficult)==1:#or cls not in classes
             continue
-        cls_id = classes.index(cls)
+        try:
+            cls_id = classes.index(cls)
+        except:
+            cls_id=0
         xmlbox = obj.find('bndbox')
         xmin=int(xmlbox.find('xmin').text)
         ymin=int(xmlbox.find('ymin').text)
@@ -59,9 +68,13 @@ wd = getcwd()
 #     os.mkdir(save_path)
 encoding='utf-8'
 for datasetname, image_set in sets:
-    SaveDir='%s_%s_YOLOv5'%(datasetname,image_set)
-    if not os.path.exists(SaveDir):
-        os.mkdir(SaveDir)
+    SaveDir=os.path.join(datasetpath,'dataset/%s_YOLOv5'%(image_set))
+    LabelDir=os.path.join(SaveDir,'label')
+    ImgDir=os.path.join(SaveDir,'image')
+    if not os.path.exists(LabelDir):
+        os.makedirs(LabelDir)
+    if not os.path.exists(ImgDir):
+        os.makedirs(ImgDir)
     f=open(os.path.join(datasetpath, 'ImageSets/Main/%s.txt' % (image_set)),'r',encoding=encoding)
     image_ids = f.readlines()
     f.close()
@@ -70,7 +83,8 @@ for datasetname, image_set in sets:
     for image_id in image_ids:
         print(image_id)
         # with open('s')list_file.write(path%(image_id))
-        with open(os.path.join(SaveDir,'%s.txt'%(image_id)), 'w', encoding=encoding) as label_file:
+        shutil.copy(os.path.join(datasetpath,'JPEGImages/%s.jpg'%image_id),ImgDir)
+        with open(os.path.join(LabelDir,'%s.txt'%(image_id)), 'w', encoding=encoding) as label_file:
             convert_annotation(datasetname, image_id, label_file,encoding=encoding)
             #list_file.write('\n')
     #list_file.close()
