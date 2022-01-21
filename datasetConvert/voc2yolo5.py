@@ -69,8 +69,8 @@ wd = getcwd()
 encoding='utf-8'
 for datasetname, image_set in sets:
     SaveDir=os.path.join(datasetpath,'dataset/%s_YOLOv5'%(image_set))
-    LabelDir=os.path.join(SaveDir,'label')
-    ImgDir=os.path.join(SaveDir,'image')
+    LabelDir=os.path.join(SaveDir,'labels')
+    ImgDir=os.path.join(SaveDir,'images')
     if not os.path.exists(LabelDir):
         os.makedirs(LabelDir)
     if not os.path.exists(ImgDir):
