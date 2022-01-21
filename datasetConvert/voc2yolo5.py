@@ -30,7 +30,6 @@ classes=[
 ########################New
 #classes=['boat']
 sets=[('SMD_SS','train'),('SMD_SS','test'),('SMD_SS','all')]
-
 datasetpath='F:/ShipDataset/SeaShips_SMD'#'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
 
 def convert_annotation(datasetname,image_id, list_file,encoding='utf-8'):
