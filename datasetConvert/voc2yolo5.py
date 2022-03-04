@@ -29,9 +29,9 @@ classes=[
 ]
 ########################New
 #classes=['boat']
-sets=[('SMD_SS','train'),('SMD_SS','test'),('SMD_SS','all')]
+sets=[('SMD_SS','train'),('SMD_SS','test'),]#('SMD_SS','all')
 
-datasetpath='F:/ShipDataset/SeaShips_SMD'#'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
+datasetpath='E:/fjj/SeaShips_SMD'#'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
 
 def convert_annotation(datasetname,image_id, list_file,encoding='utf-8'):
     in_file = open(os.path.join(datasetpath,'Annotations/%s.xml'%(image_id)),'r',encoding=encoding)
