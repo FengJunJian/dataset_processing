@@ -32,7 +32,7 @@ classes=[
 sets=[('SMD_SS','train'),('SMD_SS','test'),]#('SMD_SS','all')
 datasetpath='E:/fjj/SeaShips_SMD'#'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
 
-def convert_annotation(datasetname,image_id, list_file,encoding='utf-8'):
+def convert_annotation(image_id, list_file,encoding='utf-8'):
     in_file = open(os.path.join(datasetpath,'Annotations/%s.xml'%(image_id)),'r',encoding=encoding)
     tree=ET.parse(in_file)
     root = tree.getroot()
@@ -84,6 +84,6 @@ for datasetname, image_set in sets:
         # with open('s')list_file.write(path%(image_id))
         shutil.copy(os.path.join(datasetpath,'JPEGImages/%s.jpg'%image_id),ImgDir)
         with open(os.path.join(LabelDir,'%s.txt'%(image_id)), 'w', encoding=encoding) as label_file:
-            convert_annotation(datasetname, image_id, label_file,encoding=encoding)
+            convert_annotation(image_id, label_file,encoding=encoding)
             #list_file.write('\n')
 
