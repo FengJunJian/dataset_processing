@@ -30,7 +30,6 @@ classes=[
 ########################New
 #classes=['boat']
 sets=[('SMD_SS','train'),('SMD_SS','test'),]#('SMD_SS','all')
-
 datasetpath='E:/fjj/SeaShips_SMD'#'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
 
 def convert_annotation(datasetname,image_id, list_file,encoding='utf-8'):
@@ -87,5 +86,4 @@ for datasetname, image_set in sets:
         with open(os.path.join(LabelDir,'%s.txt'%(image_id)), 'w', encoding=encoding) as label_file:
             convert_annotation(datasetname, image_id, label_file,encoding=encoding)
             #list_file.write('\n')
-    #list_file.close()
 
