@@ -70,8 +70,14 @@ def PCA1(data, p):
 
 def PCAImg(data, p):
     dataf = np.float32(data)
+    # meanVal = np.mean(dataf)  # 按列求均值，即求各个特征的均值
+    #meanVal = np.tile(meanVal, (rows, 1))
+    #dataf = dataf - meanVal
+    # dataf, meanVal = centere_data(dataf)
+    # 计算协方差矩阵
+    covMat = np.cov(dataf, rowvar=False)
     pca=PCA()
-    pca.fit(dataf)
+    pca.fit(covMat)
     # VV=pca.explained_variance_#特征值
     VR=pca.explained_variance_ratio_#特征值占比
 
@@ -86,7 +92,7 @@ def PCAImg(data, p):
     VF = pca.components_[:VN,:]
 
     lowD=np.dot(dataf, VF.T)
-    reconD=np.dot(lowD, VF) #+ pca.mean_
+    reconD=np.dot(lowD, VF) #+ meanVal#pca.mean_
     return reconD
 
 def PCAImgs(data, p):
@@ -130,8 +136,8 @@ def pcaImg():
         print("降维前的特征个数：" + str(cols) + "\n")
         # print(img)
         print('----------------------------------------')
-        PCA_img = PCA1(img, 0.90)
-        # PCA_img = PCAImg(img, 0.98)
+        # PCA_img = PCA1(img, 0.90)
+        PCA_img = PCAImg(img, 0.98)
         PCA_img = PCA_img.astype(np.uint8)
         cv2.imshow('test' + str(i), PCA_img)
     cv2.waitKey(0)
