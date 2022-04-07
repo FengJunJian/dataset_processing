@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 import colorsys
-from imgbb_function import write_detection_batch,write_detection_PIL
+from custom_dataset.imgbb_function import write_detection_batch,write_detection_PIL
 
 from annotation_function import annotation_onefile
 CLASSES=('__background__',#0
