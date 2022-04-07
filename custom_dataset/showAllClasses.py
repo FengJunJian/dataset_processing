@@ -28,10 +28,11 @@ CLASSES = ('__background__',  # 0
            )
 
 
-c=['bird', 'ship', 'ore carrier', 'buoy', 'Other', 'Fishing boat', 'fishing boat', 'Steamship', 'other', 'container ship', 'Speedboat', 'general cargo ship', 'bulk cargo carrier', 'Ordinary cargo ship', 'Boat', 'Ferry Boat', 'Sailboat', 'Kayak', 'Bulk cargo ship', 'Ferry', 'bulk cargo carrier001', 'Buoy', 'passenger ship', 'Ore carrier', 'Passenger', 'vessel', 'Sail boat', 'Speed boat', 'Container ship', 'flying bird', 'steamship', 'boat']
+# c=['bird', 'ship', 'ore carrier', 'buoy', 'Other', 'Fishing boat', 'fishing boat', 'Steamship', 'other', 'container ship', 'Speedboat', 'general cargo ship', 'bulk cargo carrier', 'Ordinary cargo ship', 'Boat', 'Ferry Boat', 'Sailboat', 'Kayak', 'Bulk cargo ship', 'Ferry', 'bulk cargo carrier001', 'Buoy', 'passenger ship', 'Ore carrier', 'Passenger', 'vessel', 'Sail boat', 'Speed boat', 'Container ship', 'flying bird', 'steamship', 'boat']
 
 
-path='G:/ShipDataSet/BXShipDataset/Annotations'#'Annotations'
+#path='G:/ShipDataSet/BXShipDataset/Annotations'#'Annotations'
+path='E:/SeaShips_SMD/Annotations'#'Annotations'
 xmls=os.listdir(path)
 classnames=[]
 nclassnames=[]
