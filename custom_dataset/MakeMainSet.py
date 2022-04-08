@@ -123,24 +123,27 @@ def test():
             f.write(data+'\n')
 
 def train_test_mfolder():
-    folders=['E:/SeaShips_SMD/','G:/ShipDataSet/BXShipDataset']#16980，3435
+    folders=['G:/ShipDataSet/BXShipDataset']#16980，3435 #'E:/SeaShips_SMD/',
     all=[]
     for folder in folders:
         basenames=mainSetFromAnno(folder,outFlag=True)
-        all.extend(basenames)
-    random.shuffle(all)
-    trainset=all
-    testset=all[:round(len(all)*0.1)]
+        all=basenames
+        mainpath=os.path.join(folder,'ImageSets/Main')
+        try:
+            os.makedirs(mainpath)
+        except:
+            pass
+        random.shuffle(all)
+        testnum=round(len(all) * 0.1)#
+        trainset=all[testnum:]
+        testset=all[:testnum]
 
-    with open('trainShip.txt','w') as f:
-        f.writelines(trainset)
-    with open('testShip.txt','w') as f:
-        f.writelines(testset)
-    #all=np.random.permutation(all)
-
-    # with open(os.path.join(MainSet_path,'test%d.txt'%test_num),'w') as f:
-    #     for data in testset:
-    #         f.write(data+'\n')
+        with open(os.path.join(mainpath,'allShip.txt'),'w') as f:
+            f.writelines(all)
+        with open(os.path.join(mainpath,'trainShip.txt'),'w') as f:
+            f.writelines(trainset)
+        with open(os.path.join(mainpath,'testShip.txt'),'w') as f:
+            f.writelines(testset)
 
 if __name__=='__main__':
     train_test_mfolder()
