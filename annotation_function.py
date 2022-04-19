@@ -154,7 +154,6 @@ def annotation_classes_file(path,class_name):
     print('total objects:',total_objs)
     return set(class_files)
 
-
 def annotation_classes_Mainset(annotation_path,mainset):
     from collections import Counter
     # 寻找数据集下某集合的各类别与对应数目情况
@@ -208,7 +207,6 @@ def annotation_classes_name(dataset_path):
             name = obj.find('name').text.strip()
             class_names.append(name)
     return dict(Counter(class_names))
-
 
 
 def annotation_meanpixel(dataset_path,mainsets):
@@ -296,7 +294,7 @@ if __name__ == '__main__':
     # annopath = 'E:\\fjj\\SeaShips_SMD\\Annotations'#
     # print(annotation_classes_Mainset(annopath, 'test650'))
     #E:\fjj\MarineShips2\ImageSets\Main
-    datasetpath='E:\\fjj\\MarineShips2'##'E:\\fjj\\SeaShips_SMD'#
+    datasetpath='E:\\SeaShips_SMD'#
     print(annotation_classes_name(datasetpath))
     print(annotation_maxGT(dataset_path=datasetpath))
     #print(annotation_maxGT(datasetpath))
