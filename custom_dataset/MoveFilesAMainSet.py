@@ -7,11 +7,13 @@ import os
 from tqdm import tqdm
 
 path='E:/SeaShips_SMD/dataset/test_YOLOv5M/images'
-Mainsets=['E:/SeaShips_SMD/ImageSets/Main/test.txt']
-
-with open(Mainsets[0],'r') as f:
-    Jspath='E:/SeaShips_SMD/JPEGImages'
-    Aspath = 'E:/SeaShips_SMD/Annotations'
+Mainsets=['G:/ShipDataSet/BXShipDataset/ImageSets/Main/allShip.txt',
+          'E:/SeaShips_SMD/ImageSets/Main/all12000.txt']
+MainSetpath=Mainsets[0]
+root=os.path.abspath(os.path.join(MainSetpath,'../../..'))
+with open(MainSetpath,'r') as f:
+    Jspath=os.path.join(root,'JPEGImages')
+    Aspath = os.path.join(root,'Annotations')
     Jtpath='G:/ShipProjectCode/PackImg/JPEGImages'
     Atpath='G:/ShipProjectCode/PackImg/Annotations'
     try:

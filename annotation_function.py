@@ -179,7 +179,7 @@ def annotation_classes_Mainset(annotation_path,mainset):
             class_files.setdefault(name, []).append(filename)
 
     print('total objects:',total_objs)
-    print('class_files:',class_files)
+    #print('class_files:',class_files)
     print('len class:',len(class_files.keys()))
     return dict(Counter(class_names))
 
@@ -294,9 +294,10 @@ if __name__ == '__main__':
     # annopath = 'E:\\fjj\\SeaShips_SMD\\Annotations'#
     # print(annotation_classes_Mainset(annopath, 'test650'))
     #E:\fjj\MarineShips2\ImageSets\Main
-    datasetpath='E:\\SeaShips_SMD'#
+    datasetpath='G:\ShipDataSet\BXShipDataset'#'E:\\SeaShips_SMD'
+    # print(sorted(annotation_classes_Mainset('E:\\SeaShips_SMD\\Annotations',"all12000")))
     print(annotation_classes_name(datasetpath))
-    print(annotation_maxGT(dataset_path=datasetpath))
+    # print(annotation_maxGT(dataset_path=datasetpath))
     #print(annotation_maxGT(datasetpath))
     #annotation_meanpixel(datasetpath,['all'])
     #a=annotation_classes_name(datasetpath)
