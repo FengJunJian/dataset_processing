@@ -4,9 +4,91 @@ import os
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
+import albumentations as A
 from imgaug import augmenters as iaa
+import random
+def bbox_ioa(box1, box2, eps=1E-7):
+    """ Returns the intersection over box2 area given box1, box2. Boxes are x1y1x2y2
+    box1:       np.array of shape(4)
+    box2:       np.array of shape(nx4)
+    returns:    np.array of shape(n)
+    """
+
+    box2 = box2.transpose()
+
+    # Get the coordinates of bounding boxes
+    b1_x1, b1_y1, b1_x2, b1_y2 = box1[0], box1[1], box1[2], box1[3]
+    b2_x1, b2_y1, b2_x2, b2_y2 = box2[0], box2[1], box2[2], box2[3]
+
+    # Intersection area
+    inter_area = (np.minimum(b1_x2, b2_x2) - np.maximum(b1_x1, b2_x1)).clip(0) * \
+                 (np.minimum(b1_y2, b2_y2) - np.maximum(b1_y1, b2_y1)).clip(0)
+
+    # box2 area
+    box2_area = (b2_x2 - b2_x1) * (b2_y2 - b2_y1) + eps
+
+    # Intersection over box2 area
+    return inter_area / box2_area
+def bbox2segment(bbox):#xmin,ymin,xmax,ymax
+    #n=len(bboxes)
+    #segments=[]
+    #for bbox in bboxes:
+    segment = []
+    segment.append([[bbox[0],bbox[1]]])
+    segment.append([[bbox[0],bbox[3]]])
+    segment.append([[bbox[2],bbox[3]]])
+    segment.append([[bbox[2], bbox[1]]])
+    #segments.append(np.array(segment))
+    return np.array(segment)
+def bboxes2segment(bboxes):#xmin,ymin,xmax,ymax
+    #n=len(bboxes)
+    segments=[]
+    for bbox in bboxes:
+        segments.append(bbox2segment(bbox))
+
+    return segments
+def copy_paste(im, labels,p=0.5):
+    # Implement Copy-Paste augmentation https://arxiv.org/abs/2012.07177, labels as nx5 np.array(cls, xyxy)
+    #n = len(segments)
+    n=len(labels)
+    segments=bboxes2segment(labels[:,1:])
+    #segment = bbox2segment(labels[0, 1:])
+    if p and n:
+        h, w, c = im.shape  # height, width, channels
+        im_new = np.zeros(im.shape, np.uint8)
+        for j in random.sample(range(n), k=round(p * n)):
+            #l, s = labels[j], segments[j]
+            l = labels[j]
+            box = w - l[3], l[2], w - l[1], l[4]
+            ioa = bbox_ioa(box, labels[:, 1:5])  # intersection over area
+            if (ioa < 0.20).all():  # allow 30% obscuration of existing labels
+                labels = np.concatenate((labels, [[l[0], *box]]), 0)
+                # segments.append(np.concatenate((w - s[:, 0:1], s[:, 1:2]), 1))
+                segments.append(bbox2segment(box))
+                cv2.drawContours(im_new, [segments[j].astype(np.int32)], -1, (255, 255, 255), cv2.FILLED)
+            #cv2.imshow('a',im_new)
+        #cv2.circle()
+        # imgray=cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
+        # ret, thresh = cv2.threshold(imgray, 127, 255, 0)
+        # contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        result = cv2.bitwise_and(src1=im, src2=im_new)
+        result = cv2.flip(result, 1)  # augment segments (flip left-right)
+        i = result > 0  # pixels to replace
+        # i[:, :] = result.max(2).reshape(h, w, 1)  # act over ch
+        im[i] = result[i]  # cv2.imwrite('debug.jpg', im)  # debug
+    return im, labels
+    #return im, labels, segments
+def mixup(im, labels, im2, labels2):
+    # Applies MixUp augmentation https://arxiv.org/pdf/1710.09412.pdf
+    r = np.random.beta(32.0, 32.0)  # mixup ratio, alpha=beta=32.0
+    im = (im * r + im2 * (1 - r)).astype(np.uint8)
+    labels = np.concatenate((labels, labels2), 0)
+    return im, labels
+
 def augTorch():
-    root='E:/fjj/SeaShips_SMD/JPEGImages'
+    from torchvision import transforms
+    root='E:/SeaShips_SMD/JPEGImages'
     imgname='MVI_1582_VIS_00253.jpg'#'MVI_1644_VIS_00203.jpg'
     imagepath=os.path.join(root,imgname)
 
@@ -70,7 +152,7 @@ def augTorch():
     a.save(os.path.join(savetmp,'b'+imgname))
 
 def augImgaug():
-    root = 'E:/fjj/SeaShips_SMD/JPEGImages'
+    root = 'E:/SeaShips_SMD/JPEGImages'
     imgname = 'MVI_1582_VIS_00253.jpg'  # 'MVI_1644_VIS_00203.jpg'
     imagepath = os.path.join(root, imgname)
 
@@ -123,7 +205,62 @@ def postprocess():
         cv2.imshow('a',dst)
         cv2.waitKey(1)
         cv2.imwrite(os.path.join(root,"resize"+file),dst)
+
+def augImgalbu():
+    root = 'E:/SeaShips_SMD/JPEGImages'
+    #imgname = 'MVI_1582_VIS_00253.jpg'  # 'MVI_1644_VIS_00203.jpg'
+    imgname="000001.jpg"
+    imgname1 = "000002.jpg"
+    imagepath = os.path.join(root, imgname)
+    # img = Image.open(imagepath)
+    img = cv2.imread(imagepath)
+    img2=cv2.imread(os.path.join(root,imgname1))
+    H,W,C=img.shape
+    #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    # imgnp = np.array(img)
+    plt.figure(3)
+    plt.imshow(img[:,:,::-1])
+    #plt.grid()
+
+    labels=np.array([[0,633,467,944,510]])#(label,xmin,ymin,xmax,ymax)
+    labels1=np.array([[0,894,474,1252,525]])
+    #labels=np.array([0])
+    frame = plt.gca()
+    # y 轴不可见
+    # frame.axes.get_yaxis().set_visible(False)
+    # plt.axis('off')
+
+    seq = A.Compose([
+        A.Resize(int(H/2),int(W/2)),
+        #A.Cutout(8)
+        # A.RandomFog(p=1.0),#雾霾
+        #A.RandomRain(p=1.0)#下雨
+        #A.RandomShadow(p=1.0)#阴影
+        # A.RandomScale(p=1.0)
+        #A.RandomSunFlare(p=1.0)
+
+    ],bbox_params=A.BboxParams("pascal_voc",label_fields=['class_labels']),)
+    new={}
+    new['image']=None
+    new['bboxes']=None
+    new.update(seq(image=img, bboxes=labels[:,1:], class_labels=labels[:,0]))
+    #cv2.imshow('a',new['image'])
+    im,la=copy_paste(img,labels,p=1.0)
+    im3, labels3=mixup(img,labels,img2,labels1)
+    new['image']=im
+    new['bboxes']=la
+    # imgA = cv2.cvtColor(imgs[0], cv2.COLOR_RGB2BGR)
+    plt.figure(2)
+    plt.imshow(new['image'][:,:,::-1])
+    print(new['bboxes'])
+    #plt.grid()
+    # plt.axis('off')
+
+    # cv2.imwrite('o' + imgname, img)
+    # cv2.imwrite('a' + imgname, imgs[0])
+    plt.show()
 if __name__ == "__main__":
-    augImgaug()
+    augImgalbu()
+    # augImgaug()
     #augTorch()
     # postprocess()
