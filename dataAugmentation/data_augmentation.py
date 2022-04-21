@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 import albumentations as A
+
 from imgaug import augmenters as iaa
 import random
 def bbox_ioa(box1, box2, eps=1E-7):
@@ -222,7 +223,7 @@ def augImgalbu():
     plt.imshow(img[:,:,::-1])
     #plt.grid()
 
-    labels=np.array([[0,633,467,944,510]])#(label,xmin,ymin,xmax,ymax)
+    labels=np.array([[0,633,467,944,510],[1,0,0,10,5]])#(label,xmin,ymin,xmax,ymax)
     labels1=np.array([[0,894,474,1252,525]])
     #labels=np.array([0])
     frame = plt.gca()
@@ -232,26 +233,34 @@ def augImgalbu():
 
     seq = A.Compose([
         A.Resize(int(H/2),int(W/2)),
+        A.ShiftScaleRotate(shift_limit=0,rotate_limit=0,scale_limit=0.6,border_mode=cv2.BORDER_CONSTANT  ,always_apply=True)
+        #A.Downscale(always_apply=True)#下采样
         #A.Cutout(8)
-        # A.RandomFog(p=1.0),#雾霾
+        # A.RandomFog(p=1.0),#雾True霾
         #A.RandomRain(p=1.0)#下雨
         #A.RandomShadow(p=1.0)#阴影
         # A.RandomScale(p=1.0)
         #A.RandomSunFlare(p=1.0)
 
-    ],bbox_params=A.BboxParams("pascal_voc",label_fields=['class_labels']),)
+    ],bbox_params=A.BboxParams("pascal_voc",),)#seq.processors['bboxes'].params._to_dict()
+
     new={}
     new['image']=None
     new['bboxes']=None
+    albuformat="pascal_voc"
+    original_bbox_p=seq.processors['bboxes'].params._to_dict()
+    original_bbox_p.update({"format":albuformat,"label_fields":['class_labels']})
+    seq.processors["bboxes"] = A.BboxProcessor(A.BboxParams(**original_bbox_p))
     new.update(seq(image=img, bboxes=labels[:,1:], class_labels=labels[:,0]))
     #cv2.imshow('a',new['image'])
-    im,la=copy_paste(img,labels,p=1.0)
-    im3, labels3=mixup(img,labels,img2,labels1)
-    new['image']=im
-    new['bboxes']=la
+    # im,la=copy_paste(img,labels,p=1.0)
+    # im3, labels3=mixup(img,labels,img2,labels1)
+    # new['image']=im
+    # new['bboxes']=la
     # imgA = cv2.cvtColor(imgs[0], cv2.COLOR_RGB2BGR)
     plt.figure(2)
     plt.imshow(new['image'][:,:,::-1])
+    print(new['image'].shape)
     print(new['bboxes'])
     #plt.grid()
     # plt.axis('off')
