@@ -63,22 +63,11 @@ im = Image.fromarray(edge_detect)
 # image数据转换为灰度模式
 im = im.convert('L')
 
-
-
-
-
-
-
-
 o=cv2.imread(path,cv2.IMREAD_GRAYSCALE)
 r1=cv2.Canny(o,128,200)
 r2=cv2.Canny(o,32,128)
 
-
-
 cv2.imshow("original",o)
-
-
 
 cv2.imshow("result1",r1)
 cv2.imshow("result2",r2)
