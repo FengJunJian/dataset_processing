@@ -13,7 +13,6 @@ from imdb import imdb as imdb2
 from semi_factory import get_imdb
 import roidb as rdl_roidb
 import os
-import pickle
 import xml.etree.ElementTree as ET
 ###########################################################################################
 hsv_tuples = [(x / len(CLASSES), 1., 1.)
