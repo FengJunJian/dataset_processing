@@ -101,7 +101,6 @@ def augTorch():
     transform=transforms.Compose(
                         [
                             #transforms
-
                             #transforms.RandomCrop((1080,1920), padding=4),
                             # transforms.RandomCrop((1080,1080), padding=4),
                             #transforms.RandomResizedCrop((1080,1920), (0.8, 1.0),(3.0/4,1920.0/1080.0)),
@@ -232,12 +231,12 @@ def augImgalbu():
     # plt.axis('off')
 
     seq = A.Compose([
-        A.Resize(int(H/2),int(W/2)),
-        A.ShiftScaleRotate(shift_limit=0,rotate_limit=0,scale_limit=0.6,border_mode=cv2.BORDER_CONSTANT  ,always_apply=True)
+        #A.Resize(int(H/2),int(W/2)),
+        #A.ShiftScaleRotate(shift_limit=0,rotate_limit=0,scale_limit=0.6,border_mode=cv2.BORDER_CONSTANT  ,always_apply=True)
         #A.Downscale(always_apply=True)#下采样
         #A.Cutout(8)
         # A.RandomFog(p=1.0),#雾True霾
-        #A.RandomRain(p=1.0)#下雨
+        A.RandomRain(p=1.0)#下雨
         #A.RandomShadow(p=1.0)#阴影
         # A.RandomScale(p=1.0)
         #A.RandomSunFlare(p=1.0)
@@ -259,12 +258,12 @@ def augImgalbu():
     # new['bboxes']=la
     # imgA = cv2.cvtColor(imgs[0], cv2.COLOR_RGB2BGR)
     plt.figure(2)
+    #cv2.imwrite('R'+imgname,new['image'])
     plt.imshow(new['image'][:,:,::-1])
     print(new['image'].shape)
     print(new['bboxes'])
     #plt.grid()
     # plt.axis('off')
-
     # cv2.imwrite('o' + imgname, img)
     # cv2.imwrite('a' + imgname, imgs[0])
     plt.show()
