@@ -1,7 +1,9 @@
 import cv2
 import numpy as np
+from tqdm import tqdm
 #2018.10.31更新基于海天线检测
 #vector<Rect> tar_detect(Mat &img)
+
 def tar_detect(img,return_horizon=False):
 	tar_pos=[]
 	if img is None:
@@ -152,7 +154,6 @@ def detect_Target(points):#const vector<Point> &points, int *flag_target
 		return target_pos,flag_target
 
 
-
 def batch_horizon(dirname):
 	import os
 	saveDir = 'E:/HorizonLine'
@@ -162,7 +163,7 @@ def batch_horizon(dirname):
 		pass
 	path = dirname#'E:/SeaShips_SMD/JPEGImages/'  # MVI_0790_VIS_OB_00291 006837 MVI_1627_VIS_00051.jpg
 	paths = os.listdir(path)
-	for p in paths:
+	for p in tqdm(paths):
 		basename = p
 		img = cv2.imread(os.path.join(path, p))
 		img = cv2.resize(img, None, None, fx=0.5, fy=0.5)
@@ -171,12 +172,15 @@ def batch_horizon(dirname):
 		horizonLine = tar_detect(img, return_horizon=True)
 		horizonLine = round(horizonLine)
 		img = cv2.line(img, (0, horizonLine), (img.shape[1] - 1, horizonLine), (0, 0, 255), 2)
-		print(horizonLine)
+		#print(horizonLine)
 
-		tar_pos = tar_detect(img)
-		for tar_p in tar_pos:
-			tar_p = np.array(tar_p, dtype=np.int32)
-			img = cv2.rectangle(img, (tar_p[0], tar_p[1]), (tar_p[0] + tar_p[2], tar_p[1] + tar_p[3]), (255, 0, 0))
+		#海平线检测与焦点检测
+		if False:
+			tar_pos = tar_detect(img)
+			for tar_p in tar_pos:
+				tar_p = np.array(tar_p, dtype=np.int32)
+				img = cv2.rectangle(img, (tar_p[0], tar_p[1]), (tar_p[0] + tar_p[2], tar_p[1] + tar_p[3]), (255, 0, 0))
+
 		cv2.imshow('dst', img)
 		cv2.imwrite(os.path.join(saveDir, basename), img)
 		cv2.waitKey(1)
@@ -203,5 +207,6 @@ def one_horizon(path):
 	#cv2.imwrite(os.path.join(saveDir, basename), img)
 	cv2.waitKey(1)
 if __name__=="__main__":
-	path = 'E:/SeaShips_SMD/JPEGImages/004555.jpg'
-	one_horizon(path)
+	path = 'E:/SeaShips_SMD/JPEGImages'#/004555.jpg
+	# one_horizon(path)
+	batch_horizon(path)
