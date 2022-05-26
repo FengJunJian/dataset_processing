@@ -13,26 +13,69 @@ def tar_detect(img,return_horizon=False):
 	imgray=cv2.GaussianBlur(imgray,  (3, 3), 0, 0)
 	thesd = 0.0
 	Mkernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+	Mkernele = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 	thesd, imggtem = cv2.threshold(imgray, thesd, 255, cv2.THRESH_OTSU)
-	dilatedgray = cv2.dilate(imggtem, kernel=Mkernel)
+	dilatedgray = cv2.dilate(imggtem, kernel=Mkernel)#膨胀
+	erodegrady=cv2.erode(imggtem,kernel=Mkernele)#腐蚀
 
-	# imgsrc = img.copy()
+	imgsrc = img.copy()
 	# cv2.imshow('dt', dilatedgray)
+	# cv2.imshow('er',erodegrady)
 	# cv2.imshow('gt', imggtem)
+	# cv2.imwrite('dt.jpg', dilatedgray)
+	# cv2.imwrite('er.jpg', erodegrady)
+	# cv2.imwrite('gt.jpg', imggtem)
 	# cv2.waitKey(1)
 
-	imgmask=cv2.reduce(dilatedgray,  1, cv2.REDUCE_AVG, cv2.CV_16S)#//reduce to single column average
+	imgmaske = cv2.reduce(erodegrady, 1, cv2.REDUCE_AVG, cv2.CV_16S)  # //reduce to single column average
+	###
+
+	# newimgmask = np.reshape(imgmaske, (27, 20))
+	# cv2.imshow('newimgmask.jpg', newimgmask)
+	# cv2.imwrite('newimgmask.jpg', newimgmask)
+	###
+
+	imgmaskd=cv2.reduce(dilatedgray,  1, cv2.REDUCE_AVG, cv2.CV_16S)#//reduce to single column average
+
 	row,col=imgray.shape
 	#row = imgray.rows, col = imgray.cols;
 	kuan_hight = round(row / 20)
 
 	horizon_top = 0
 	horizon_bottom = row - 1#;//区域上下界
-	thesd,imgtem = cv2.threshold(imgmask,  thesd, 255, cv2.THRESH_OTSU)
-	imgtemd=np.abs(cv2.filter2D(imgtem,cv2.CV_16S,np.array([[-1],[0],[1]])))
+	horizon_top_b=0#水平线1 上搜索
+	horizon_bottom_b=0#水平线2 下搜若
+	thesd,imgteme = cv2.threshold(imgmaske,  thesd, 255, cv2.THRESH_OTSU)
 
+	#newimgmask = np.reshape(imgteme, (27, 20))
+	# aa=cv2.resize(imgteme,(960,540),interpolation=cv2.INTER_NEAREST)
+	# cv2.imshow('newimgmask1.jpg', aa)
+	# cv2.imwrite('newimgmask1.jpg', aa)
+
+	thesd, imgtemd = cv2.threshold(imgmaskd, thesd, 255, cv2.THRESH_OTSU)
+	imgteme = np.abs(cv2.filter2D(imgteme, cv2.CV_16S, np.array([[-1], [0], [1]])))#下->上
+	imgtemd=np.abs(cv2.filter2D(imgtemd,cv2.CV_16S,np.array([[-1],[0],[1]])))#寻找跳变 上->下
+
+	# newimgmask = np.reshape(imgteme, (27, 20))
+	# cv2.imshow('newimgmask2', newimgmask)
+	# cv2.imwrite('newimgmask2.jpg', newimgmask)
 	bottom_temp = row - 1 #;//区域下界
 	flagContinue=False
+	#从下往下搜索
+	for i in range(row-1,kuan_hight,-1):#(int i = kuan_hight; i < row; i++)//获得海天线上下界
+		ppre = imgteme[i,0]
+		#paft=imgtem[i+1,0]
+
+		if ppre == 0:# 寻找跳变，先验认为天空255,当没有河流则可能被认为255，增加0->255的判断,抓住第一个跳变
+			continue
+		top_temp = i - 1.5*kuan_hight#  //海天线上界
+		horizon_top = 0 if top_temp < 0 else top_temp
+		bottom_temp = i + 1.5*kuan_hight
+		horizon_bottom = row - 1 if bottom_temp >= row else bottom_temp #海天线下界
+		horizon_bottom_b = (horizon_top+ horizon_bottom)/2 # 水平线2 下搜若
+		break
+	#Original
+	# 从上往下搜索
 	for i in range(kuan_hight,row-1):#(int i = kuan_hight; i < row; i++)//获得海天线上下界
 		ppre = imgtemd[i,0]
 		#paft=imgtem[i+1,0]
@@ -43,15 +86,16 @@ def tar_detect(img,return_horizon=False):
 		horizon_top = 0 if top_temp < 0 else top_temp
 		bottom_temp = i + 1.5*kuan_hight
 		horizon_bottom = row - 1 if bottom_temp >= row else bottom_temp #海天线下界
+		horizon_top_b = (horizon_top+horizon_bottom)/2  # 水平线1 上搜索
 		break
-
 	# horizonLine=round((horizon_bottom + horizon_top) / 2)
 	# imgsrc=cv2.line(imgsrc,(0,horizonLine),(img.shape[1]-1,horizonLine),(0,0,255),2)
 	# cv2.imshow('line',imgsrc)
 	# cv2.waitKey(1)
 	#//检查海天线区域
 	if return_horizon:
-		return (horizon_bottom+horizon_top)/2
+		#return (horizon_bottom+horizon_top)/2
+		return horizon_top_b, horizon_bottom_b, kuan_hight #水平线1，水平线2，水平线区域
 
 	if bottom_temp-horizon_top < kuan_hight:	#return tar_posprint(tar_pos)
 		return tar_pos
@@ -169,9 +213,13 @@ def batch_horizon(dirname):
 		img = cv2.resize(img, None, None, fx=0.5, fy=0.5)
 		cv2.imshow('src', img)
 		cv2.waitKey(1)
-		horizonLine = tar_detect(img, return_horizon=True)
-		horizonLine = round(horizonLine)
-		img = cv2.line(img, (0, horizonLine), (img.shape[1] - 1, horizonLine), (0, 0, 255), 2)
+		horizonLineT,horizonLineB,kuan = tar_detect(img, return_horizon=True)
+		horizonLineT = round(horizonLineT)
+		horizonLineB = round(horizonLineB)
+		horizonLine = round((horizonLineT+horizonLineB)/2)
+		img = cv2.line(img, (0, horizonLineT), (img.shape[1] - 1, horizonLineT), (0, 0, 255), 2)#red
+		# img = cv2.line(img, (0, horizonLineB), (img.shape[1] - 1, horizonLineB), (255, 0, 0), 2)#blue
+		# img = cv2.line(img, (0, horizonLine), (img.shape[1] - 1, horizonLine), (0, 255, 0), 2)#green
 		#print(horizonLine)
 
 		#海平线检测与焦点检测
@@ -183,10 +231,10 @@ def batch_horizon(dirname):
 
 		cv2.imshow('dst', img)
 		cv2.imwrite(os.path.join(saveDir, basename), img)
+		#cv2.imwrite('dst.jpg', img)
 		cv2.waitKey(1)
 
 def one_horizon(path):
-
 	# path = 'E:/SeaShips_SMD/JPEGImages/004555.jpg'# MVI_0790_VIS_OB_00291 006837 MVI_1627_VIS_00051.jpg
 	#paths = os.listdir(path)
 	#for p in paths:
