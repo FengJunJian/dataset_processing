@@ -232,14 +232,20 @@ def augImgalbu():
 
     seq = A.Compose([
         #A.Resize(int(H/2),int(W/2)),
-        #A.ShiftScaleRotate(shift_limit=0,rotate_limit=0,scale_limit=0.6,border_mode=cv2.BORDER_CONSTANT  ,always_apply=True)
+        A.ShiftScaleRotate(shift_limit=0,rotate_limit=0,scale_limit=0.6,border_mode=cv2.BORDER_CONSTANT  ,p=0.8),
         #A.Downscale(always_apply=True)#下采样
-        #A.Cutout(8)
-        # A.RandomFog(p=1.0),#雾True霾
-        A.RandomRain(p=1.0)#下雨
+        #A.Cutout(10,p=1.0),
+        #A.GaussianBlur(blur_limit=(3,9),p=1.0)
+        #A.Blur(blur_limit=10,p=1.0),
+        #A.MedianBlur(p=1.0)
+        # A.ChannelDropout(p=1.0)
+        #A.ShiftScaleRotate(shift_limit=0, rotate_limit=0, scale_limit=0.6, border_mode=cv2.BORDER_CONSTANT,p=1.0)
+        A.Cutout(num_holes=16,max_h_size=16,max_w_size=16,p=0.8)
+        #A.RandomFog(fog_coef_upper=0.5,p=1.0),#雾True霾
+        #A.RandomRain(p=1.0)#下雨
         #A.RandomShadow(p=1.0)#阴影
         # A.RandomScale(p=1.0)
-        #A.RandomSunFlare(p=1.0)
+        #A.RandomSunFlare(flare_roi=(0,0,1,0.3),num_flare_circles_lower=1,num_flare_circles_upper=5,src_radius=300,p=1.0)
 
     ],bbox_params=A.BboxParams("pascal_voc",),)#seq.processors['bboxes'].params._to_dict()
 
