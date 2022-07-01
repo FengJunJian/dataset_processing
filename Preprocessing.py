@@ -8,7 +8,6 @@ def tar_detect(img,return_horizon=False):
 	tar_pos=[]
 	if img is None:
 		return tar_pos
-
 	imgray=cv2.cvtColor(img , cv2.COLOR_BGR2GRAY)
 	imgray=cv2.GaussianBlur(imgray,  (3, 3), 0, 0)
 	thesd = 0.0
@@ -102,13 +101,10 @@ def tar_detect(img,return_horizon=False):
 
 	imgrect=imgray[round(horizon_top):round(horizon_bottom),:]#截取海天线区域
 	imgharris=cv2.cornerHarris(imgrect,  3, 3, 0.22)
-	# minStrength=0.0
-	# maxStrength=0.0
+
 	#//计算最大最小响应值
 	minStrength, maxStrength, minLoc, maxLoc=cv2.minMaxLoc(imgharris)#, &minStrength, &minStrength);
 
-
-	localMax=None
 	#//默认3*3核膨胀，膨胀之后，除了局部最大值点和原来相同，其它非局部最大值点被
 	#//3*3邻域内的最大值点取代
 	dilated=cv2.dilate(imgharris,kernel=None)
