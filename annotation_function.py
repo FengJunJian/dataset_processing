@@ -14,6 +14,7 @@ from semi_factory import get_imdb
 import roidb as rdl_roidb
 import os
 import xml.etree.ElementTree as ET
+from tqdm import tqdm
 ###########################################################################################
 hsv_tuples = [(x / len(CLASSES), 1., 1.)
                       for x in range(len(CLASSES))]
@@ -288,14 +289,68 @@ def annotation_onefile(xmlpath):
 
     return boxes,gt_classes
 
+def annotation_minmaxGTsize(dataset_path,mainsets=None):
+    # 寻找数据集下某集合中，最小和最大的边框尺寸
+    # annotation_path：注释文件所在目录
+    # mainset: 数据集名
+
+    minArea = 10**5
+    maxArea=-1
+    minW=10**5
+    minH=10**5
+    maxW=-1
+    maxH=-1
+    minmaxNAME=[None]*6#minArea,maxArea,minW,minH,maxW,maxH
+    Annotation_path = os.path.join(dataset_path, 'Annotations')
+    files = os.listdir(Annotation_path)
+    for filename in tqdm(files):
+        tree = ET.parse(os.path.join(Annotation_path, filename))
+        objs = tree.findall('object')
+        for obj in objs:
+            bbox = obj.find('bndbox')
+            # Make pixel indexes 0-based
+            x1 = float(bbox.find('xmin').text) - 1#
+            y1 = float(bbox.find('ymin').text) - 1
+            x2 = float(bbox.find('xmax').text) - 1
+            y2 = float(bbox.find('ymax').text) - 1
+            cls = obj.find('name').text.strip()
+            width=max(x1,x2)-min(x1,x2)
+            height=max(y1,y2)-min(y1,y2)
+            area=width*height
+            if area<minArea:
+                minArea=area
+                minmaxNAME[0]=filename
+            if area>maxArea:
+                maxArea = area
+                minmaxNAME[1] = filename
+            if width<minW:
+                minW=width
+                minmaxNAME[2]=filename
+            if height<minH:
+                minH=height
+                minmaxNAME[3]=filename
+            if width > maxW:
+                maxW = width
+                minmaxNAME[4] = filename
+            if height > maxH:
+                maxH = height
+                minmaxNAME[5] = filename
+    output={}
+    for k ,n,v in zip(("minArea","maxArea", "minW", "minH", "maxW","maxH"),minmaxNAME,(minArea,maxArea, minW, minH, maxW,maxH)):
+        output[k]=(n,v)
+    return  output
+
+
 if __name__ == '__main__':
     # from datasets.pascal_voc import pascal_voc
     # annopath = 'E:\\fjj\\SeaShips_SMD\\Annotations'#
     # print(annotation_classes_Mainset(annopath, 'test650'))
     #E:\fjj\MarineShips2\ImageSets\Main
-    datasetpath='G:\ShipDataSet\BXShipDataset'#'E:\\SeaShips_SMD'
+    #datasetpath='G:\ShipDataSet\BXShipDataset'#'E:\\SeaShips_SMD'
+    datasetpath="E:/SeaShips_SMD"
     # print(sorted(annotation_classes_Mainset('E:\\SeaShips_SMD\\Annotations',"all12000")))
-    print(annotation_classes_name(datasetpath))
+    print(annotation_minmaxGTsize(dataset_path=datasetpath))
+    #print(annotation_classes_name(datasetpath))
     # print(annotation_maxGT(dataset_path=datasetpath))
     #print(annotation_maxGT(datasetpath))
     #annotation_meanpixel(datasetpath,['all'])
