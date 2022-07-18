@@ -7,7 +7,10 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from copy import copy
 def ComputeDataset(ImagePath):
-
+    '''
+    Compute the mean and std
+    ImagePath: the Path to Images
+    '''
     means = [0, 0, 0]
     stdevs = [0, 0, 0]
     dataset=ImageFolder(ImagePath,transforms.Compose([transforms.ToTensor()]))
@@ -24,6 +27,10 @@ def ComputeDataset(ImagePath):
     print(means,stdevs)
 
 def BalanceDatasetClassification(ImagePath):
+    '''
+    Compute the balance weight for different classes
+    ImagePath: Path for images
+    '''
     datatransforms=transforms.Compose([
         transforms.ToTensor(),
         transforms.Resize((64,128))#(h,w)
@@ -49,6 +56,7 @@ def BalanceDatasetClassification(ImagePath):
 
 
 def make_weights_for_balanced_classes(images, nclasses):
+
     count = [0] * nclasses
     for item in images:
         count[item[1]] += 1
