@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 import albumentations as A
-
+from annotation_function import annotation_onefile
 from imgaug import augmenters as iaa
 import random
 def bbox_ioa(box1, box2, eps=1E-7):
@@ -109,7 +109,22 @@ def augTorch():
                             # transforms.RandomApply(
                             #     [transforms.ColorJitter(0.3, 0.3, 0.15, 0.1)], p=0.5
                             # ),
-                            transforms.RandomErasing(0.5),
+                            transforms.ToTensor(),
+                            transforms.ColorJitter(0.4, 0.4, 0.4, 0.1),
+                            #transforms.RandomGrayscale(p=0.2),
+                            #transforms.GaussianBlur((3,3),sigma=(0.1, 2.0)),
+                            transforms.RandomErasing(
+                                p=0.7, scale=(0.002, 0.005), ratio=(0.3, 3.3), value="random"
+                                # H: max scale-0.0083, W:max scale-0.0057
+                            ),
+                            transforms.RandomErasing(
+                                p=0.5, scale=(0.001, 0.005), ratio=(0.1, 6), value="random"
+                            ),
+                            transforms.RandomErasing(
+                                p=0.3, scale=(0.001, 0.005), ratio=(0.05, 8), value="random"
+                            ),
+
+                            # transforms.RandomErasing(0.5),
                             #transforms.RandomGrayscale(p=0.2),
                             #transforms.Resize((1080,1920))
                             #transforms.ToTensor(),
@@ -141,15 +156,16 @@ def augTorch():
         os.mkdir(savetmp)
 
     a=transform(img)
-    anp=np.array(a)
+    anp=np.array(a*255).astype(np.uint8).transpose((1,2,0))
     plt.figure(2)
     plt.imshow(anp)
+    plt.show()
     a.save(os.path.join(savetmp,'a'+imgname))
-    a=transform(img)
-    anp=np.array(a)
-    plt.figure(3)
-    plt.imshow(anp)
-    a.save(os.path.join(savetmp,'b'+imgname))
+    # a=transform(img)
+    # anp=np.array(a)
+    # plt.figure(3)
+    # plt.imshow(anp)
+    # a.save(os.path.join(savetmp,'b'+imgname))
 
 def augImgaug():
     root = 'E:/SeaShips_SMD/JPEGImages'
@@ -167,14 +183,13 @@ def augImgaug():
     # y 轴不可见
     #frame.axes.get_yaxis().set_visible(False)
     #plt.axis('off')
-
-
     seq=iaa.Sequential([
         #iaa.Cutout(5,size=0.02),
         iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.07*255), per_channel=0.6),
         iaa.OneOf([
            #iaa.Dropout((0.01, 0.1), per_channel=0.6),
            iaa.CoarseDropout((0.03, 0.031), size_percent=(0.02, 0.05),per_channel=0.3),]),
+
         iaa.Affine(
             scale={"x": (1.0, 1.0), "y": (1.0, 1.0)},
             translate_percent={"x": (-15.0/1920.0, 15.0/1920.0), "y": (-15.0/1080.0, 15.0/1080.0)},#(1080,1920)
@@ -210,6 +225,7 @@ def augImgalbu():
     root = 'E:/SeaShips_SMD/JPEGImages'
     #imgname = 'MVI_1582_VIS_00253.jpg'  # 'MVI_1644_VIS_00203.jpg'
     imgname="000001.jpg"
+    basename,ext=os.path.splitext(imgname)
     imgname1 = "000002.jpg"
     imagepath = os.path.join(root, imgname)
     # img = Image.open(imagepath)
@@ -222,8 +238,14 @@ def augImgalbu():
     plt.imshow(img[:,:,::-1])
     #plt.grid()
 
-    labels=np.array([[0,633,467,944,510],[1,0,0,10,5]])#(label,xmin,ymin,xmax,ymax)
-    labels1=np.array([[0,894,474,1252,525]])
+    boxes,gt_classes=annotation_onefile(os.path.join(root,'../Annotations',basename+'.xml'))#np.array([[0,633,467,944,510],[1,0,0,10,5]])#(label,xmin,ymin,xmax,ymax)
+    gts=np.zeros((len(boxes),1))
+    labels=np.concatenate([gts,boxes],axis=1)
+    boxes, gt_classes = annotation_onefile(os.path.join(root, '../Annotations',
+                                                        basename + '.xml'))
+    gts = np.ones((len(boxes), 1))*1
+    labels1 = np.concatenate([gts, boxes], axis=1)
+    # labels1=np.array([[0,894,474,1252,525]])
     #labels=np.array([0])
     frame = plt.gca()
     # y 轴不可见
@@ -232,6 +254,7 @@ def augImgalbu():
 
     seq = A.Compose([
         #A.Resize(int(H/2),int(W/2)),
+
         A.ShiftScaleRotate(shift_limit=0,rotate_limit=0,scale_limit=0.6,border_mode=cv2.BORDER_CONSTANT  ,p=0.8),
         #A.Downscale(always_apply=True)#下采样
         #A.Cutout(10,p=1.0),
@@ -240,7 +263,9 @@ def augImgalbu():
         #A.MedianBlur(p=1.0)
         # A.ChannelDropout(p=1.0)
         #A.ShiftScaleRotate(shift_limit=0, rotate_limit=0, scale_limit=0.6, border_mode=cv2.BORDER_CONSTANT,p=1.0)
-        A.Cutout(num_holes=16,max_h_size=16,max_w_size=16,p=0.8)
+        A.Cutout(num_holes=16,max_h_size=16,max_w_size=16,p=0.8),
+        A.GridDropout()
+        #A.CoarseDropout(2,max_height=0.2,max_width=0.2,min_holes=1,min_height=0.05,min_width=0.05,p=1.0)
         #A.RandomFog(fog_coef_upper=0.5,p=1.0),#雾True霾
         #A.RandomRain(p=1.0)#下雨
         #A.RandomShadow(p=1.0)#阴影
@@ -265,7 +290,10 @@ def augImgalbu():
     # imgA = cv2.cvtColor(imgs[0], cv2.COLOR_RGB2BGR)
     plt.figure(2)
     #cv2.imwrite('R'+imgname,new['image'])
+    for box in new['bboxes']:
+        cv2.rectangle(new['image'],(int(box[0]),int(box[1])),(int(box[2]),int(box[3])),(255,0,0),thickness=2)
     plt.imshow(new['image'][:,:,::-1])
+
     print(new['image'].shape)
     print(new['bboxes'])
     #plt.grid()
@@ -274,7 +302,8 @@ def augImgalbu():
     # cv2.imwrite('a' + imgname, imgs[0])
     plt.show()
 if __name__ == "__main__":
-    augImgalbu()
+    augTorch()
+    # augImgalbu()
     # augImgaug()
     #augTorch()
     # postprocess()
