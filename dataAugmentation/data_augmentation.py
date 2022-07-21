@@ -189,7 +189,7 @@ def augImgaug():
         iaa.OneOf([
            #iaa.Dropout((0.01, 0.1), per_channel=0.6),
            iaa.CoarseDropout((0.03, 0.031), size_percent=(0.02, 0.05),per_channel=0.3),]),
-
+            #iaa.Fog()
         iaa.Affine(
             scale={"x": (1.0, 1.0), "y": (1.0, 1.0)},
             translate_percent={"x": (-15.0/1920.0, 15.0/1920.0), "y": (-15.0/1080.0, 15.0/1080.0)},#(1080,1920)
@@ -264,7 +264,9 @@ def augImgalbu():
         # A.ChannelDropout(p=1.0)
         #A.ShiftScaleRotate(shift_limit=0, rotate_limit=0, scale_limit=0.6, border_mode=cv2.BORDER_CONSTANT,p=1.0)
         A.Cutout(num_holes=16,max_h_size=16,max_w_size=16,p=0.8),
-        A.GridDropout()
+        #A.RandomFog
+        A.GridDropout(),
+
         #A.CoarseDropout(2,max_height=0.2,max_width=0.2,min_holes=1,min_height=0.05,min_width=0.05,p=1.0)
         #A.RandomFog(fog_coef_upper=0.5,p=1.0),#雾True霾
         #A.RandomRain(p=1.0)#下雨
