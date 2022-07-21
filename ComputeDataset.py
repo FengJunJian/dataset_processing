@@ -69,8 +69,55 @@ def make_weights_for_balanced_classes(images, nclasses):
         weight[idx] = weight_per_class[val[1]]
     return weight
 
+def compareDataDistributionDemo(a,b):
+    import matplotlib.pyplot as plt
+    import numpy as np
+    plt.figure(1)
+    a = np.array([384, 1758, 1213, 1729, 803, 1725, 258, 45233, 1291, 3642, 709, 4666, 507, 3374, 1570])  # 68862
+    a = a / a.sum()
+    b = np.array([35, 158, 142, 188, 86, 148, 22, 4344, 126, 358, 66, 447, 46, 304, 166])  # 6636
+    b = b / b.sum()
+    bar_width = 0.3
+    x = np.arange(len(a))
+    # plt.figure(1)
+    plt.bar(x, a, width=bar_width)
+    # plt.figure(2)
+    plt.bar(x + bar_width, b, width=bar_width, align="center")
 
+def drawClassDistribution(file="dataClassDistribution.npz"):
+    import matplotlib.pyplot as plt
+    import numpy as np
 
+    data=np.load(file)
+    a = data['labeled']
+    b = data['unlabeled']
+    c = data['training']
+    d = data['test']
+    DataSum = [a.sum(), b.sum(), c.sum(), d.sum()]
+    # a=np.array([384, 1758, 1213, 1729, 803, 1725, 258, 45233, 1291, 3642, 709, 4666, 507, 3374, 1570])  # 68862
+    # b=np.array([35,158,142,188,86,148,22,4344,126,358,66,447,46,304,166])#6636
+    # b =b/ b.sum()
+    plt.figure(1)
+    a = a / a.sum()
+    b = b / b.sum()
+    c = c / c.sum()
+    d = d / d.sum()
+    bar_width = 0.2
+    x = np.arange(len(a))
+
+    plt.bar(x, a, width=bar_width)
+    # plt.figure(2)
+    plt.bar(x + bar_width, b, width=bar_width)
+    plt.bar(x + 2 * bar_width, c, width=bar_width)
+    plt.bar(x + 3 * bar_width, d, width=bar_width)
+    plt.legend(
+        ['labeled data:' + str(DataSum[0]), 'unlabeled data:' + str(DataSum[1]), 'training data:' + str(DataSum[2]),
+         'test data:' + str(DataSum[3])])
+    plt.savefig("dataClassDistribution.jpg", bbox_inches = 'tight')  #
+    # plt.hist(a, bins=len(a))
+    # plt.hist(b)
 if __name__ == '__main__':
-    path='../data_processing_cache/Classification'
-    ComputeDataset(path)
+    #path='../data_processing_cache/Classification'
+    #ComputeDataset(path)
+
+    drawClassDistribution("E:/SSL/unbiased-teacher/dataClassDistribution.npz")
