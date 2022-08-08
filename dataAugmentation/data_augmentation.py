@@ -254,7 +254,7 @@ def augImgalbu():
 
     seq = A.Compose([
         #A.Resize(int(H/2),int(W/2)),
-
+        A.RandomSunFlare(),
         A.ShiftScaleRotate(shift_limit=0,rotate_limit=0,scale_limit=0.6,border_mode=cv2.BORDER_CONSTANT  ,p=0.8),
         #A.Downscale(always_apply=True)#下采样
         #A.Cutout(10,p=1.0),
