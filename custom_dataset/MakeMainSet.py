@@ -3,10 +3,11 @@ import random
 import glob
 import os
 import shutil
+#从标注中创建完整的VOC数据集
 '''
 一个函数生成一种MainSet.txt
 '''
-abs_path='E:\\fyl\\WIDER_val\\'
+abs_path='E:\\WIDER_val\\'
 dataset_path=os.path.join(abs_path,'JPEGImages\\')
 MainSet_path=os.path.join(abs_path,'ImageSets\\Main\\')
 
