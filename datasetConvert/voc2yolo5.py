@@ -72,12 +72,12 @@ def convert_annotation(datasetpath,image_id,  list_file,encoding='utf-8'):
 
         list_file.write(str(cls_id)+' ' + " ".join([str(a) for a in b])+'\n')
 
-def shipClass():
-    targetPath='E:/SeaShips_SMD'
-    sets=[[('SMD_SS','train'),('SMD_SS','test')],[('BXShip','allShip'),('BXShip','testShip')]]#('SMD_SS','all')
-    # sets = [
-    #         [('BXShip', 'allShip'), ('BXShip', 'testShip')]]  # ('SMD_SS','all')
-    datasetpaths=('E:/SeaShips_SMD','G:\ShipDataSet\BXShipDataset')#'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
+def shipClass(datasetpaths=('E:/SeaShips_SMD','G:\ShipDataSet\BXShipDataset'),
+              sets=[[('SMD_SS','train'),('SMD_SS','test')],[('BXShip','allShip'),('BXShip','testShip')]],
+              savePath='E:/SeaShips_SMD'):
+    #targetPath=
+    # sets=[[('SMD_SS','train'),('SMD_SS','test')],[('BXShip','allShip'),('BXShip','testShip')]]#('SMD_SS','all')
+    # datasetpaths=('E:/SeaShips_SMD','G:\ShipDataSet\BXShipDataset')#'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
     # datasetpaths = ( 'G:/ShipDataSet/BXShipDataset',)  # 'E:/fjj/MarineShips2' #'E:/fjj/SeaShips_SMD'
     wd = getcwd()
     # save_path='dataset'
@@ -86,7 +86,7 @@ def shipClass():
     encoding='utf-8'
     for datasetpath,set in zip(datasetpaths,sets):
         for datasetname, image_set in set:
-            SaveDir=os.path.join(targetPath,'dataset/%s_YOLOv5'%(image_set))
+            SaveDir=os.path.join(savePath,'dataset/%s_YOLOv5'%(image_set))
             LabelDir=os.path.join(SaveDir,'labels')
             ImgDir=os.path.join(SaveDir,'images')
             if not os.path.exists(LabelDir):
@@ -141,5 +141,9 @@ def ship4class():
                 #list_file.write('\n')
 
 if __name__=="__main__":
+    datasetpaths = ('G:/NewFish', )
+    sets = [[('SHIP', 'all'), ('SHIP', 'train'), ('SHIP', 'test')],]
+    savePath = 'G:/NewFish/'
+    shipClass(datasetpaths,sets,savePath)
+
     # ship4class()
-    shipClass()
