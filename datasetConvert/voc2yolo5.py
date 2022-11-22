@@ -144,6 +144,11 @@ if __name__=="__main__":
     datasetpaths = ('G:/NewFish', )
     sets = [[('SHIP', 'all'), ('SHIP', 'train'), ('SHIP', 'test')],]
     savePath = 'G:/NewFish/'
+
+    datasetpaths = ('G:/fjj/SeaShips_SMD',)
+    sets = [[('SHIP', 'train_SeaShips0'), ('SHIP', 'train_SeaShips1'), ('SHIP', 'test_SeaShips')], ]
+    savePath = 'G:/NewFish/'
+
     shipClass(datasetpaths,sets,savePath)
 
     # ship4class()
